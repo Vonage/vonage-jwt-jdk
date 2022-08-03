@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2019 Nexmo Inc
+ * Copyright 2022 Vonage
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,6 +47,7 @@ class Jwt private constructor(val applicationId: String, val privateKeyContents:
     class Builder(
         private var applicationId: String = "",
         private var privateKeyContents: String = "",
+        private var signed: Boolean = true,
         private var claims: MutableMap<String, Any> = mutableMapOf()
     ) {
         /**
@@ -55,9 +56,17 @@ class Jwt private constructor(val applicationId: String, val privateKeyContents:
         fun applicationId(applicationId: String) = apply { this.applicationId = applicationId }
 
         /**
+         * Makes this token unsigned, so that private key is not required.
+         */
+        fun unsigned() = apply { signed = false }
+
+        /**
          * Set the private key contents.
          */
-        fun privateKeyContents(privateKeyContents: String) = apply { this.privateKeyContents = privateKeyContents }
+        fun privateKeyContents(privateKeyContents: String) = apply {
+            this.privateKeyContents = privateKeyContents
+            signed = privateKeyContents.isNotBlank()
+        }
 
         /**
          * Set the private key path.
@@ -116,7 +125,7 @@ class Jwt private constructor(val applicationId: String, val privateKeyContents:
         private fun validate() {
             if (applicationId == "" && privateKeyContents == "") throw IllegalStateException("Both an Application ID and Private Key are required.")
             if (applicationId == "") throw IllegalStateException("Application ID is required.")
-            if (privateKeyContents == "") throw IllegalStateException("Private Key is required.")
+            if (privateKeyContents == "" && signed) throw IllegalStateException("Private Key is required for signed token.")
         }
     }
 

@@ -5,9 +5,7 @@ matrix:
   include:
     - jdk: openjdk8
       dist: trusty
-    - jdk: openjdk9
-      dist: trusty
-    - jdk: openjdk11
+    - jdk: openjdk17
       dist: trusty
     - jdk: openjdk-ea
       dist: trusty

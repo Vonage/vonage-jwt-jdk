@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2019 Nexmo Inc
+ * Copyright 2022 Vonage
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,9 +36,7 @@ class JwtGenerator(private val keyConverter: KeyConverter = KeyConverter()) {
      * Generate a token from a Jwt.
      */
     fun generate(jwt: Jwt): String {
-        val privateKey = keyConverter.privateKey(jwt.privateKeyContents)
-
-        val jwtBuilder = Jwts.builder()
+        var jwtBuilder = Jwts.builder()
             .setHeaderParam("type", "JWT")
             .claim("application_id", jwt.applicationId)
             .addClaims(jwt.claims)
@@ -46,7 +44,11 @@ class JwtGenerator(private val keyConverter: KeyConverter = KeyConverter()) {
         addRequiredNonExistentClaims(jwt.claims, jwtBuilder)
         convertUserSuppliedDateClaimsToEpoch(jwt.claims, jwtBuilder)
 
-        return jwtBuilder.signWith(privateKey, SignatureAlgorithm.RS256).compact()
+        if (jwt.privateKeyContents.isNotBlank()) {
+            val privateKey = keyConverter.privateKey(jwt.privateKeyContents)
+            jwtBuilder = jwtBuilder.signWith(privateKey, SignatureAlgorithm.RS256)
+        }
+        return jwtBuilder.compact()
     }
 
     private fun addRequiredNonExistentClaims(claims: Map<String, Any>, jwtBuilder: JwtBuilder) {

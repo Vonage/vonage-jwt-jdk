@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2019 Nexmo Inc
+ * Copyright 2022 Vonage
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -113,13 +113,46 @@ class JwtGeneratorTest {
         val token = jwt.generate()
         val rsaKey = KeyConverter().privateKey(privateKeyContents)
 
-        val claims = Jwts.parser().setSigningKey(rsaKey).parseClaimsJws(token)
+        val claims = Jwts.parserBuilder().setSigningKey(rsaKey).build().parseClaimsJws(token)
         assertEquals("JWT", claims.header["type"])
         assertEquals("RS256", claims.header["alg"])
         assertEquals("application-id", claims.body["application_id"])
         assertTrue(claims.body.containsKey("iat"))
         assertTrue(claims.body.containsKey("jti"))
-        assertTrue(Jwts.parser().isSigned(token))
+        assertTrue(Jwts.parserBuilder().build().isSigned(token))
+    }
+
+    @Test
+    fun `when a map is given as claim value then it is jsonified in generated string`() {
+        val token : String = Jwt.builder()
+            .applicationId("aaaaaaaa-bbbb-cccc-dddd-0123456789ab")
+            .privateKeyContents(privateKeyContents)
+            .issuedAt(ZonedDateTime.now())
+            .id("705b6f50-8c21-11e8-9bcb-595326422d60")
+            .subject("alice")
+            .expiresAt(ZonedDateTime.now().plusMinutes(20))
+            .addClaim("acl", mapOf(
+                "paths" to mapOf(
+                    "/*/users/**" to mapOf<String, Any>(),
+                    "/*/conversations/**" to mapOf(),
+                    "/*/sessions/**" to mapOf(),
+                    "/*/devices/**" to mapOf(),
+                    "/*/image/**" to mapOf(),
+                    "/*/media/**" to mapOf(),
+                    "/*/applications/**" to mapOf(),
+                    "/*/push/**" to mapOf(),
+                    "/*/knocking/**" to mapOf(),
+                    "/*/legs/**" to mapOf()
+                )
+            ))
+            .build()
+            .generate()
+
+        val rsaKey = KeyConverter().privateKey(privateKeyContents)
+        val parsedClaims = Jwts.parserBuilder().setSigningKey(rsaKey).build().parseClaimsJws(token)
+        val acl = parsedClaims.body["acl"]
+        val paths = (acl as Map<*, *>)["paths"] as Map<*, *>
+        assertEquals(10, paths.entries.size)
     }
 
     private fun testDateInUtc() = ZonedDateTime.of(LocalDateTime.of(1990, 3, 4, 0, 0, 0), ZoneId.of("UTC"))

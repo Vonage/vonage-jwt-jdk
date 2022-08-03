@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.nexmo:jwt:1.0.1'
+    implementation 'com.nexmo:jwt:1.0.2'
 }
 ```
 
@@ -28,7 +28,7 @@ For Maven:
 <dependency>
   <groupId>com.nexmo</groupId>
   <artifactId>jwt</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 
