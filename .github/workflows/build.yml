@@ -1,0 +1,27 @@
+name: Build Java CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [8, 11, 17]
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots verify
+      - name: Run Codecov
+        uses: codecov/codecov-action@v2
