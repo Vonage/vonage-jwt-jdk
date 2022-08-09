@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.nexmo.jwt
+package com.vonage.jwt
 
 import io.jsonwebtoken.JwtBuilder
 import io.jsonwebtoken.Jwts
@@ -29,7 +29,7 @@ import java.time.ZonedDateTime
 import java.util.*
 
 /**
- * Produce a Nexmo-compliant JWS from a JWT.
+ * Produce a Vonage-compliant JWS from a JWT.
  */
 class JwtGenerator(private val keyConverter: KeyConverter = KeyConverter()) {
     /**

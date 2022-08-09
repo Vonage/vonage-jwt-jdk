@@ -19,45 +19,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.nexmo.jwt
+package com.vonage.jwt
 
-import org.junit.Before
-import org.junit.Test
-import java.io.File
+import java.security.KeyFactory
+import java.security.interfaces.RSAPrivateKey
+import java.security.spec.PKCS8EncodedKeySpec
 import java.util.*
-import kotlin.test.assertEquals
 
-private const val PRIVATE_KEY_HEADER = "-----BEGIN PRIVATE KEY-----\n"
-private const val PRIVATE_KEY_FOOTER = "-----END PRIVATE KEY-----"
-private const val PRIVATE_KEY_PATH = "src/test/resources/private.key"
+/**
+ * Convert a PKCS8Encoded Key to an RsaKey
+ */
+class KeyConverter(private val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")) {
+    fun privateKey(key: String): RSAPrivateKey =
+        keyFactory.generatePrivate(keySpec(sanitize(key))) as RSAPrivateKey
 
-class KeyConverterTest {
-    val privateKeyContents = File(PRIVATE_KEY_PATH).readText()
-    val sanitizedKey = privateKeyContents
+    private fun sanitize(key: String) = key
         .replace(PRIVATE_KEY_HEADER, "")
         .replace(PRIVATE_KEY_FOOTER, "")
         .replace("\\s".toRegex(), "")
 
-    lateinit var keyConverter: KeyConverter
+    private fun keySpec(key: String) = PKCS8EncodedKeySpec(Base64.getDecoder().decode(key))
 
-    @Before
-    fun setup() {
-        keyConverter = KeyConverter()
-    }
-
-    @Test
-    fun `when presented with a private key string, an RsaKey is created`() {
-        val key = keyConverter.privateKey(privateKeyContents)
-
-        assertEquals("PKCS#8", key.format)
-        assertEquals(sanitizedKey, Base64.getEncoder().encodeToString(key.encoded))
-    }
-
-    @Test
-    fun `when presented with a sanitized private key string, an RsaKey is created`() {
-        val key = keyConverter.privateKey(sanitizedKey)
-
-        assertEquals("PKCS#8", key.format)
-        assertEquals(sanitizedKey, Base64.getEncoder().encodeToString(key.encoded))
+    companion object {
+        private const val PRIVATE_KEY_HEADER: String = "-----BEGIN PRIVATE KEY-----\n"
+        private const val PRIVATE_KEY_FOOTER = "-----END PRIVATE KEY-----"
     }
 }

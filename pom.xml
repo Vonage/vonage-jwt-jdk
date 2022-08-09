@@ -4,32 +4,32 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.nexmo</groupId>
+    <groupId>com.vonage</groupId>
     <artifactId>jwt</artifactId>
     <version>1.0.2</version>
     <packaging>jar</packaging>
 
     <name>jwt</name>
-    <description>Library for creating JWTs for use with Nexmo</description>
-    <url>https://github.com/nexmo/nexmo-jwt-jdk</url>
+    <description>Library for creating JWTs for use with Vonage APIs</description>
+    <url>https://github.com/vonage/vonage-jwt-jdk</url>
     <scm>
-        <connection>scm:git:git@github.com:Nexmo/nexmo-jwt-jdk</connection>
-        <developerConnection>scm:git:git@github.com:Nexmo/nexmo-jwt-jdk</developerConnection>
-        <url>https://github.com/Nexmo/nexmo-jwt-jdk</url>
+        <connection>scm:git:git@github.com:Vonage/vonage-jwt-jdk</connection>
+        <developerConnection>scm:git:git@github.com:Vonage/vonage-jwt-jdk</developerConnection>
+        <url>https://github.com/Vonage/vonage-jwt-jdk</url>
     </scm>
     <licenses>
         <license>
             <name>MIT</name>
-            <url>https://raw.githubusercontent.com/Nexmo/nexmo-jwt-jdk/master/LICENSE.md</url>
+            <url>https://raw.githubusercontent.com/Vonage/vonage-jwt-jdk/master/LICENSE.md</url>
         </license>
     </licenses>
     <organization>
-        <name>Nexmo</name>
-        <url>https://developer.nexmo.com/tools</url>
+        <name>Vonage</name>
+        <url>https://developer.vonage.com/tools</url>
     </organization>
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/Nexmo/nexmo-jwt-jdk/issues</url>
+        <url>https://github.com/Vonage/vonage-jwt-jdk/issues</url>
     </issueManagement>
     <developers>
         <developer>

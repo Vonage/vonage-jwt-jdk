@@ -19,29 +19,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.nexmo.jwt
+package com.vonage.jwt
 
-import java.security.KeyFactory
-import java.security.interfaces.RSAPrivateKey
-import java.security.spec.PKCS8EncodedKeySpec
-import java.util.*
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
-/**
- * Convert a PKCS8Encoded Key to an RsaKey
- */
-class KeyConverter(private val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")) {
-    fun privateKey(key: String): RSAPrivateKey =
-        keyFactory.generatePrivate(keySpec(sanitize(key))) as RSAPrivateKey
+class StringClaimDelegate : ReadOnlyProperty<Jwt, String> {
+    override fun getValue(thisRef: Jwt, property: KProperty<*>) = getClaimOrThrowException(
+        when (property.name) {
+            "subject" -> "sub"
+            "id" -> "jti"
+            else -> property.name
+        }, thisRef.claims
+    )
 
-    private fun sanitize(key: String) = key
-        .replace(PRIVATE_KEY_HEADER, "")
-        .replace(PRIVATE_KEY_FOOTER, "")
-        .replace("\\s".toRegex(), "")
+    private fun getClaimOrThrowException(key: String, claims: Map<String, Any?>) =
+        (claims[key] ?: throwNoSuchElementException(key)) as String
 
-    private fun keySpec(key: String) = PKCS8EncodedKeySpec(Base64.getDecoder().decode(key))
-
-    companion object {
-        private const val PRIVATE_KEY_HEADER: String = "-----BEGIN PRIVATE KEY-----\n"
-        private const val PRIVATE_KEY_FOOTER = "-----END PRIVATE KEY-----"
+    private fun throwNoSuchElementException(name: String) {
+        throw NoSuchElementException("Claim $name is not set.")
     }
 }

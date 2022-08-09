@@ -1,12 +1,11 @@
-# Nexmo JWT JDK Library
+# Vonage JWT JDK Library
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.nexmo/jwt.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.nexmo%22%20AND%20a:%22jwtr%22)
-[![Build Status](https://travis-ci.org/Nexmo/nexmo-jwt-jdk.svg?branch=main)](https://travis-ci.org/Nexmo/nexmo-jwt-jdk)
-[![codecov](https://codecov.io/gh/Nexmo/nexmo-jwt-jdk/branch/master/graph/badge.svg)](https://codecov.io/gh/Nexmo/nexmo-jwt-jdk)
+[![Maven Central](https://img.shields.io/maven-central/v/com.vonage/jwt.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.vonage%22%20AND%20a:%22jwtr%22)
+[![codecov](https://codecov.io/gh/Vonage/vonage-jwt-jdk/branch/master/graph/badge.svg)](https://codecov.io/gh/Vonage/vonage-jwt-jdk)
 
-This library provides a wrapper for generating JWTs using Nexmo-specific claims.
+This library provides a wrapper for generating JWTs using Vonage-specific claims.
 
-Learn more about [Authenticating with JSON Web Tokens](https://developer.nexmo.com/concepts/guides/authentication#json-web-tokens-jwt).
+Learn more about [Authenticating with JSON Web Tokens](https://developer.vonage.com/concepts/guides/authentication#json-web-tokens-jwt).
 
 ## Installation
 
@@ -18,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.nexmo:jwt:1.0.2'
+    implementation 'com.vonage:jwt:1.0.2'
 }
 ```
 
@@ -26,7 +25,7 @@ For Maven:
 
 ```xml
 <dependency>
-  <groupId>com.nexmo</groupId>
+  <groupId>com.vonage</groupId>
   <artifactId>jwt</artifactId>
   <version>1.0.2</version>
 </dependency>
@@ -64,7 +63,7 @@ The JWT library provides a `Jwt.Builder` which can be used to construct a `Jwt` 
 
 ### Generating a JWT
 
-The API requires an `application_id` claim, and the token needs to be signed with a private key. The corresponding public key is uploaded to Nexmo for signature verification. The library expects you to provide a `PKCS#8` key contents or file path.
+The API requires an `application_id` claim, and the token needs to be signed with a private key. The corresponding public key is uploaded to Vonage for signature verification. The library expects you to provide a `PKCS#8` key contents or file path.
 
 #### Generating a JWT with Private Key Contents
 

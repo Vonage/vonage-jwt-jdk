@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.nexmo.jwt
+package com.vonage.jwt
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -27,7 +27,7 @@ import java.nio.file.Paths
 import java.time.ZonedDateTime
 
 /**
- * Class representing a JWT for interacting with the Nexmo API. Construct using Jwt.builder
+ * Class representing a JWT for interacting with the Vonage API. Construct using Jwt.builder
  */
 class Jwt private constructor(val applicationId: String, val privateKeyContents: String, var claims: Map<String, Any>) {
     val issuedAt: ZonedDateTime by DateClaimDelegate()

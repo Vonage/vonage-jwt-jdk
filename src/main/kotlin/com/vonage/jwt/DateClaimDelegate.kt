@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.nexmo.jwt
+package com.vonage.jwt
 
 import java.time.ZonedDateTime
 import kotlin.properties.ReadOnlyProperty
