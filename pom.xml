@@ -6,7 +6,7 @@
 
     <groupId>com.vonage</groupId>
     <artifactId>jwt</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <name>jwt</name>
@@ -20,7 +20,7 @@
     <licenses>
         <license>
             <name>MIT</name>
-            <url>https://raw.githubusercontent.com/Vonage/vonage-jwt-jdk/master/LICENSE.md</url>
+            <url>https://raw.githubusercontent.com/Vonage/vonage-jwt-jdk/main/LICENSE.md</url>
         </license>
     </licenses>
     <organization>
