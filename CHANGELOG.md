@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.0.3] - TBD
 - Bumped Kotlin version to 1.9.10
-- Removed runtime dependency on `jjwt-jackson`
+- Updated Jackson runtime dependency version to 2.15.2
 
 ## [1.0.2] - 2022-08-03
 - Bumped dependency versions
