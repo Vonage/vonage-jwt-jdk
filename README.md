@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.vonage:jwt:1.0.2'
+    implementation 'com.vonage:jwt:1.1.0'
 }
 ```
 
@@ -27,7 +27,7 @@ For Maven:
 <dependency>
   <groupId>com.vonage</groupId>
   <artifactId>jwt</artifactId>
-  <version>1.0.2</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 
