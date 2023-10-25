@@ -31,9 +31,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 private const val PRIVATE_KEY_PATH = "src/test/resources/private.key"
+private const val PUBLIC_KEY_PATH = "src/test/resources/public.key"
 
 class JwtGeneratorTest {
     val privateKeyContents = File(PRIVATE_KEY_PATH).readText()
+    val publicKeyContents = File(PUBLIC_KEY_PATH).readText()
 
     @Test
     fun `when a jwt has all custom properties those properties are on the generated token`() {
@@ -111,15 +113,15 @@ class JwtGeneratorTest {
             .build()
 
         val token = jwt.generate()
-        val rsaKey = KeyConverter().privateKey(privateKeyContents)
+        val rsaKey = KeyConverter().publicKey(publicKeyContents)
 
-        val claims = Jwts.parserBuilder().setSigningKey(rsaKey).build().parseClaimsJws(token)
+        val claims = Jwts.parser().verifyWith(rsaKey).build().parseSignedClaims(token)
         assertEquals("JWT", claims.header["type"])
         assertEquals("RS256", claims.header["alg"])
-        assertEquals("application-id", claims.body["application_id"])
-        assertTrue(claims.body.containsKey("iat"))
-        assertTrue(claims.body.containsKey("jti"))
-        assertTrue(Jwts.parserBuilder().build().isSigned(token))
+        assertEquals("application-id", claims.payload["application_id"])
+        assertTrue(claims.payload.containsKey("iat"))
+        assertTrue(claims.payload.containsKey("jti"))
+        assertTrue(Jwts.parser().build().isSigned(token))
     }
 
     @Test
@@ -148,9 +150,9 @@ class JwtGeneratorTest {
             .build()
             .generate()
 
-        val rsaKey = KeyConverter().privateKey(privateKeyContents)
-        val parsedClaims = Jwts.parserBuilder().setSigningKey(rsaKey).build().parseClaimsJws(token)
-        val acl = parsedClaims.body["acl"]
+        val rsaKey = KeyConverter().publicKey(publicKeyContents)
+        val parsedClaims = Jwts.parser().verifyWith(rsaKey).build().parseSignedClaims(token)
+        val acl = parsedClaims.payload["acl"]
         val paths = (acl as Map<*, *>)["paths"] as Map<*, *>
         assertEquals(10, paths.entries.size)
     }

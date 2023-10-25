@@ -132,8 +132,15 @@ class Jwt private constructor(val applicationId: String, val privateKeyContents:
     companion object {
         /**
          * Instantiate a new Builder for building Jwt objects.
+         *
+         * @return A new Builder.
          */
         @JvmStatic
         fun builder() = Builder()
+
+        fun verifySignature(token : String, secret : String) : Boolean {
+            // TODO
+            return true;
+        }
     }
 }

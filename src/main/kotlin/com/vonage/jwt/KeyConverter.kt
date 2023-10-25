@@ -23,25 +23,35 @@ package com.vonage.jwt
 
 import java.security.KeyFactory
 import java.security.interfaces.RSAPrivateKey
+import java.security.interfaces.RSAPublicKey
 import java.security.spec.PKCS8EncodedKeySpec
+import java.security.spec.X509EncodedKeySpec
 import java.util.*
 
 /**
- * Convert a PKCS8Encoded Key to an RsaKey
+ * Convert a PKCS8Encoded or X509EncodedKeySpec Key to an RsaKey
  */
 class KeyConverter(private val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")) {
     fun privateKey(key: String): RSAPrivateKey =
-        keyFactory.generatePrivate(keySpec(sanitize(key))) as RSAPrivateKey
+        keyFactory.generatePrivate(privateKeySpec(sanitize(key))) as RSAPrivateKey
+
+    fun publicKey(key: String): RSAPublicKey =
+        keyFactory.generatePublic(publicKeySpec(sanitize(key))) as RSAPublicKey
 
     private fun sanitize(key: String) = key
         .replace(PRIVATE_KEY_HEADER, "")
         .replace(PRIVATE_KEY_FOOTER, "")
+        .replace(PUBLIC_KEY_HEADER, "")
+        .replace(PUBLIC_KEY_FOOTER, "")
         .replace("\\s".toRegex(), "")
 
-    private fun keySpec(key: String) = PKCS8EncodedKeySpec(Base64.getDecoder().decode(key))
+    private fun privateKeySpec(key: String) = PKCS8EncodedKeySpec(Base64.getDecoder().decode(key))
+    private fun publicKeySpec(key: String) = X509EncodedKeySpec(Base64.getDecoder().decode(key))
 
     companion object {
         private const val PRIVATE_KEY_HEADER: String = "-----BEGIN PRIVATE KEY-----\n"
         private const val PRIVATE_KEY_FOOTER = "-----END PRIVATE KEY-----"
+        private const val PUBLIC_KEY_HEADER: String = "-----BEGIN PUBLIC KEY-----\n"
+        private const val PUBLIC_KEY_FOOTER = "-----END PUBLIC KEY-----"
     }
 }

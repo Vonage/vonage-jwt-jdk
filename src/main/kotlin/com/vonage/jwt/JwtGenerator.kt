@@ -23,10 +23,10 @@ package com.vonage.jwt
 
 import io.jsonwebtoken.JwtBuilder
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.*
+import kotlin.collections.LinkedHashMap
 
 /**
  * Produce a Vonage-compliant JWS from a JWT.
@@ -37,34 +37,26 @@ class JwtGenerator(private val keyConverter: KeyConverter = KeyConverter()) {
      */
     fun generate(jwt: Jwt): String {
         var jwtBuilder = Jwts.builder()
-            .setHeaderParam("type", "JWT")
-            .claim("application_id", jwt.applicationId)
-            .addClaims(jwt.claims)
-
-        addRequiredNonExistentClaims(jwt.claims, jwtBuilder)
-        convertUserSuppliedDateClaimsToEpoch(jwt.claims, jwtBuilder)
+            .header().add("type", "JWT").and()
+            .claims().add("application_id", jwt.applicationId)
+            .add(fixClaims(jwt.claims)).and()
 
         if (jwt.privateKeyContents.isNotBlank()) {
             val privateKey = keyConverter.privateKey(jwt.privateKeyContents)
-            jwtBuilder = jwtBuilder.signWith(privateKey, SignatureAlgorithm.RS256)
+            jwtBuilder = jwtBuilder.signWith(privateKey, Jwts.SIG.RS256)
         }
         return jwtBuilder.compact()
     }
 
-    private fun addRequiredNonExistentClaims(claims: Map<String, Any>, jwtBuilder: JwtBuilder) {
-        if (!claims.containsKey("iat")) jwtBuilder.claim("iat", Instant.now().epochSecond)
-        if (!claims.containsKey("jti")) jwtBuilder.claim("jti", UUID.randomUUID().toString())
-    }
-
-    private fun convertUserSuppliedDateClaimsToEpoch(claims: Map<String, Any>, jwtBuilder: JwtBuilder) {
-        convertZonedDateTimesToLong(claims, jwtBuilder, "iat", "exp", "nbf")
-    }
-
-    private fun convertZonedDateTimesToLong(claims: Map<String, Any>, builder: JwtBuilder, vararg keys: String) {
-        builder.addClaims(
-            claims.filter { it.key in keys && it.value is ZonedDateTime }
-                .mapValues { (it.value as ZonedDateTime).toEpochSecond() }
-
-        )
+    private fun fixClaims(claims: Map<String, Any>) : Map<String, Any> {
+        val normalClaims = LinkedHashMap<String, Any>()
+        normalClaims.putAll(claims)
+        val timeKeys = listOf("iat", "exp", "nbf")
+        val convertedClaims = claims.filter { it.key in timeKeys && it.value is ZonedDateTime }
+            .mapValues { (it.value as ZonedDateTime).toEpochSecond() }
+        normalClaims.putAll(convertedClaims)
+        normalClaims.putIfAbsent("iat", Instant.now().epochSecond)
+        normalClaims.putIfAbsent("jti", UUID.randomUUID().toString())
+        return normalClaims
     }
 }

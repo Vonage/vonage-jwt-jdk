@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.1.0] - 2023-10-25
 - Added signature verification method
+- Added public key decoding to `KeyConverter`
 - Bumped `jjwt` version to 0.12.3
 - Bumped Kotlin version to 1.9.10
 - Bumped Jackson runtime dependency version to 2.15.3
