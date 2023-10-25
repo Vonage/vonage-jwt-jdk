@@ -30,12 +30,22 @@ import kotlin.test.assertEquals
 private const val PRIVATE_KEY_HEADER = "-----BEGIN PRIVATE KEY-----\n"
 private const val PRIVATE_KEY_FOOTER = "-----END PRIVATE KEY-----"
 private const val PRIVATE_KEY_PATH = "src/test/resources/private.key"
+private const val PUBLIC_KEY_HEADER = "-----BEGIN PUBLIC KEY-----\n"
+private const val PUBLIC_KEY_FOOTER = "-----END PUBLIC KEY-----"
+private const val PUBLIC_KEY_PATH = "src/test/resources/public.key"
 
 class KeyConverterTest {
     val privateKeyContents = File(PRIVATE_KEY_PATH).readText()
-    val sanitizedKey = privateKeyContents
+    val publicKeyContents = File(PUBLIC_KEY_PATH).readText()
+
+    val sanitizedPrivateKey = privateKeyContents
         .replace(PRIVATE_KEY_HEADER, "")
         .replace(PRIVATE_KEY_FOOTER, "")
+        .replace("\\s".toRegex(), "")
+
+    val sanitizedPublicKey = publicKeyContents
+        .replace(PUBLIC_KEY_HEADER, "")
+        .replace(PUBLIC_KEY_FOOTER, "")
         .replace("\\s".toRegex(), "")
 
     lateinit var keyConverter: KeyConverter
@@ -50,14 +60,30 @@ class KeyConverterTest {
         val key = keyConverter.privateKey(privateKeyContents)
 
         assertEquals("PKCS#8", key.format)
-        assertEquals(sanitizedKey, Base64.getEncoder().encodeToString(key.encoded))
+        assertEquals(sanitizedPrivateKey, Base64.getEncoder().encodeToString(key.encoded))
     }
 
     @Test
     fun `when presented with a sanitized private key string, an RsaKey is created`() {
-        val key = keyConverter.privateKey(sanitizedKey)
+        val key = keyConverter.privateKey(sanitizedPrivateKey)
 
         assertEquals("PKCS#8", key.format)
-        assertEquals(sanitizedKey, Base64.getEncoder().encodeToString(key.encoded))
+        assertEquals(sanitizedPrivateKey, Base64.getEncoder().encodeToString(key.encoded))
+    }
+
+    @Test
+    fun `when presented with a public key string, an RsaKey is created`() {
+        val key = keyConverter.publicKey(publicKeyContents)
+
+        assertEquals("X.509", key.format)
+        assertEquals(sanitizedPublicKey, Base64.getEncoder().encodeToString(key.encoded))
+    }
+
+    @Test
+    fun `when presented with a sanitized public key string, an RsaKey is created`() {
+        val key = keyConverter.publicKey(publicKeyContents)
+
+        assertEquals("X.509", key.format)
+        assertEquals(sanitizedPublicKey, Base64.getEncoder().encodeToString(key.encoded))
     }
 }
