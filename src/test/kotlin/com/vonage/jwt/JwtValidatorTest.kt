@@ -25,9 +25,11 @@ import org.junit.Assert.*;
 import org.junit.Test
 
 private const val HS256_SIGNATURE = "0c15c425fe48dd59dab5fb3eea57d528f405a71d78ae4998deacab4deeb02ca5"
-private const val TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
-        "eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJTaW5hIiwiaWF0IjoxNjk4MjU4NjY3fQ." +
-        "ZVSrJeaES6iaBOwd6vMk93my2gq1uCwDi3c7aCIMqa0"
+private const val TOKEN_HEADER = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+private const val TOKEN_PAYLOAD = "eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJTaW5hIiwiaWF0IjoxNjk4MjU4NjY3fQ"
+private const val TOKEN_SIGNATURE = "ZVSrJeaES6iaBOwd6vMk93my2gq1uCwDi3c7aCIMqa0"
+private const val TOKEN_HEADER_PAYLOAD = "$TOKEN_HEADER.$TOKEN_PAYLOAD"
+private const val TOKEN = "$TOKEN_HEADER_PAYLOAD.$TOKEN_SIGNATURE"
 
 class JwtValidatorTest {
 
@@ -42,22 +44,24 @@ class JwtValidatorTest {
     }
 
     @Test
+    fun `when token has no secret result is false`() {
+        val unsignedToken = "$TOKEN_HEADER_PAYLOAD.JYE9nZOm-ouJm75YB79ouwStFowe7jsEqNg1ehmmZmE"
+        assertFalse(Jwt.verifySignature(unsignedToken, HS256_SIGNATURE))
+    }
+
+    @Test
     fun `when incorrect signature is used result is false`() {
         val badSignature = "decafea1deadbeef0123456789abcdef0123456789abcdef0123456789abcdef"
         assertFalse(Jwt.verifySignature(TOKEN, badSignature))
 
         // The opposite should be true
-        val matchingToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
-                "eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJTaW5hIiwiaWF0IjoxNjk4MjU4NjY3fQ." +
-                "pZ2YiYpipVpf59vZgUHLYICJwhVISwBhy_q9WokKm2A"
+        val matchingToken = "$TOKEN_HEADER_PAYLOAD.pZ2YiYpipVpf59vZgUHLYICJwhVISwBhy_q9WokKm2A"
         assertTrue(Jwt.verifySignature(matchingToken, badSignature))
     }
 
     @Test
     fun `when token signature is different result is false`() {
-        val badToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
-                "eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJTaW5hIiwiaWF0IjoxNjk4MjU4NjY3fQ." +
-                "YNz-ojcIge37-LwXjOY835p64iXKPR_iHzLnn1msR50"
+        val badToken = "$TOKEN_HEADER_PAYLOAD.YNz-ojcIge37-LwXjOY835p64iXKPR_iHzLnn1msR50"
         assertFalse(Jwt.verifySignature(badToken, HS256_SIGNATURE))
 
         // The opposite should be true
