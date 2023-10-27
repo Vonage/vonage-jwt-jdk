@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Vonage
+ * Copyright 2023 Vonage
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,13 @@
  */
 package com.vonage.jwt
 
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import java.io.File
 import java.nio.file.Paths
 import java.time.ZonedDateTime
+import java.util.*
 import kotlin.test.assertEquals
 
 private const val PRIVATE_KEY_PATH = "src/test/resources/private.key"
@@ -56,8 +58,7 @@ class JwtBuilderTest {
     @Test
     fun `when application id and private key are provided jwt is built with them`() {
         val jwt = builder.applicationId("application-id")
-            .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
-            .build()
+            .privateKeyPath(PRIVATE_KEY_PATH).build()
 
         assertEquals("application-id", jwt.applicationId)
         assertEquals(File(PRIVATE_KEY_PATH).readText(), jwt.privateKeyContents)
@@ -166,6 +167,11 @@ class JwtBuilderTest {
         assertEquals(1, jwt.claims.size)
         assertEquals("subject", jwt.claims["sub"])
         assertEquals("subject", jwt.subject)
+    }
+
+    @Test
+    fun `when unsigned is true private key is not required`() {
+        assertNotNull(builder.applicationId(UUID.randomUUID().toString()).unsigned().build());
     }
 
     private fun builderWithRequiredFields() = builder.applicationId("application-id")

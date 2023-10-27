@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Vonage
+ * Copyright 2023 Vonage
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,10 +21,13 @@
  */
 package com.vonage.jwt
 
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.security.SignatureException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.ZonedDateTime
+import javax.crypto.spec.SecretKeySpec
 
 /**
  * Class representing a JWT for interacting with the Vonage API. Construct using Jwt.builder
@@ -132,8 +135,31 @@ class Jwt private constructor(val applicationId: String, val privateKeyContents:
     companion object {
         /**
          * Instantiate a new Builder for building Jwt objects.
+         *
+         * @return A new Builder.
          */
         @JvmStatic
         fun builder() = Builder()
+
+        /**
+         * Determines whether the provided JSON Web Token was signed by a given SHA-256 HMAC secret.
+         *
+         * @param secret The 256-bit symmetric HMAC signature.
+         * @param token The encoded JWT to check.
+         *
+         * @return {@code true} iff the token was signed by the secret, {@code false} otherwise.
+         *
+         * @since 1.1.0
+         */
+        @JvmStatic
+        fun verifySignature(token : String, secret : String) : Boolean =
+            try {
+                val secretSpec = SecretKeySpec(secret.toByteArray(), "HmacSHA256")
+                Jwts.parser().verifyWith(secretSpec).build().parse(token)
+                true
+            }
+            catch (ex : SignatureException) {
+                false;
+            }
     }
 }
