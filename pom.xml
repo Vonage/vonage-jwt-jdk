@@ -6,7 +6,7 @@
 
     <groupId>com.vonage</groupId>
     <artifactId>jwt</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <name>jwt</name>
@@ -41,12 +41,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.9.10</kotlin.version>
+        <kotlin.version>1.9.22</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
         <junit.version>4.13.2</junit.version>
         <java.version>1.8</java.version>
-        <jjwt.version>0.12.3</jjwt.version>
-        <mockito.version>4.11.0</mockito.version>
+        <jjwt.version>0.12.5</jjwt.version>
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
     </properties>
 
@@ -94,21 +93,14 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.15.3</version>
+            <version>2.16.1</version>
             <scope>runtime</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
             <artifactId>mockito-inline</artifactId>
-            <version>${mockito.version}</version>
+            <version>4.11.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -161,7 +153,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.12.1</version>
                 <configuration>
                     <source>8</source>
                     <target>8</target>
