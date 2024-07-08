@@ -24,13 +24,15 @@ package com.vonage.jwt
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import java.nio.charset.StandardCharsets
+import java.security.Key
 import java.util.*
 import kotlin.test.assertEquals
 
-private const val PRIVATE_KEY_HEADER = "-----BEGIN PRIVATE KEY-----\n"
+private const val PRIVATE_KEY_HEADER = "-----BEGIN PRIVATE KEY-----"
 private const val PRIVATE_KEY_FOOTER = "-----END PRIVATE KEY-----"
 private const val PRIVATE_KEY_PATH = "src/test/resources/private.key"
-private const val PUBLIC_KEY_HEADER = "-----BEGIN PUBLIC KEY-----\n"
+private const val PUBLIC_KEY_HEADER = "-----BEGIN PUBLIC KEY-----"
 private const val PUBLIC_KEY_FOOTER = "-----END PUBLIC KEY-----"
 private const val PUBLIC_KEY_PATH = "src/test/resources/public.key"
 
@@ -38,17 +40,20 @@ class KeyConverterTest {
     val privateKeyContents = File(PRIVATE_KEY_PATH).readText()
     val publicKeyContents = File(PUBLIC_KEY_PATH).readText()
 
-    val sanitizedPrivateKey = privateKeyContents
+    private fun String.removeCrlf(): String = replace("\\r".toRegex(), "")
+        .replace("\\n".toRegex(), "")
+
+    val sanitizedPrivateKey = privateKeyContents.removeCrlf()
         .replace(PRIVATE_KEY_HEADER, "")
         .replace(PRIVATE_KEY_FOOTER, "")
-        .replace("\\s".toRegex(), "")
 
-    val sanitizedPublicKey = publicKeyContents
+    val sanitizedPublicKey = publicKeyContents.removeCrlf()
         .replace(PUBLIC_KEY_HEADER, "")
         .replace(PUBLIC_KEY_FOOTER, "")
-        .replace("\\s".toRegex(), "")
 
     lateinit var keyConverter: KeyConverter
+
+    private fun Key.encodeToString() = Base64.getEncoder().encodeToString(encoded)
 
     @Before
     fun setup() {
@@ -60,7 +65,7 @@ class KeyConverterTest {
         val key = keyConverter.privateKey(privateKeyContents)
 
         assertEquals("PKCS#8", key.format)
-        assertEquals(sanitizedPrivateKey, Base64.getEncoder().encodeToString(key.encoded))
+        assertEquals(sanitizedPrivateKey, key.encodeToString())
     }
 
     @Test
@@ -68,7 +73,7 @@ class KeyConverterTest {
         val key = keyConverter.privateKey(sanitizedPrivateKey)
 
         assertEquals("PKCS#8", key.format)
-        assertEquals(sanitizedPrivateKey, Base64.getEncoder().encodeToString(key.encoded))
+        assertEquals(sanitizedPrivateKey, key.encodeToString())
     }
 
     @Test
@@ -76,7 +81,7 @@ class KeyConverterTest {
         val key = keyConverter.publicKey(publicKeyContents)
 
         assertEquals("X.509", key.format)
-        assertEquals(sanitizedPublicKey, Base64.getEncoder().encodeToString(key.encoded))
+        assertEquals(sanitizedPublicKey, key.encodeToString())
     }
 
     @Test
@@ -84,6 +89,6 @@ class KeyConverterTest {
         val key = keyConverter.publicKey(publicKeyContents)
 
         assertEquals("X.509", key.format)
-        assertEquals(sanitizedPublicKey, Base64.getEncoder().encodeToString(key.encoded))
+        assertEquals(sanitizedPublicKey, key.encodeToString())
     }
 }

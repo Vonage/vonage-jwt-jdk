@@ -1,8 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+This project adheres to [Semantic Versioning](http://semver.org/).
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/)
-and this project adheres to [Semantic Versioning](http://semver.org/).
+## [1.1.2] - 2024-07-08
+- Fix decoding of keys with CRLF characters
+- Internal refactoring
+- Bumped `jjwt` version to 0.12.6
+- Bumped Kotlin version to 2.0.0
+- Bumped Jackson runtime dependency version to 2.17.2
 
 ## [1.1.1] - 2024-03-08
 - Bumped `jjwt` version to 0.12.5

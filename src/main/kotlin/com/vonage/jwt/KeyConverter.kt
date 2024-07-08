@@ -43,15 +43,17 @@ class KeyConverter(private val keyFactory: KeyFactory = KeyFactory.getInstance("
         .replace(PRIVATE_KEY_FOOTER, "")
         .replace(PUBLIC_KEY_HEADER, "")
         .replace(PUBLIC_KEY_FOOTER, "")
-        .replace("\\s".toRegex(), "")
+        .replace("\\r".toRegex(), "")
+        .replace("\\n".toRegex(), "")
 
-    private fun privateKeySpec(key: String) = PKCS8EncodedKeySpec(Base64.getDecoder().decode(key))
-    private fun publicKeySpec(key: String) = X509EncodedKeySpec(Base64.getDecoder().decode(key))
+    private fun decode(key: String): ByteArray = Base64.getDecoder().decode(key)
+    private fun privateKeySpec(key: String) = PKCS8EncodedKeySpec(decode(key))
+    private fun publicKeySpec(key: String) = X509EncodedKeySpec(decode(key))
 
     companion object {
-        private const val PRIVATE_KEY_HEADER: String = "-----BEGIN PRIVATE KEY-----\n"
+        private const val PRIVATE_KEY_HEADER: String = "-----BEGIN PRIVATE KEY-----"
         private const val PRIVATE_KEY_FOOTER = "-----END PRIVATE KEY-----"
-        private const val PUBLIC_KEY_HEADER: String = "-----BEGIN PUBLIC KEY-----\n"
+        private const val PUBLIC_KEY_HEADER: String = "-----BEGIN PUBLIC KEY-----"
         private const val PUBLIC_KEY_FOOTER = "-----END PUBLIC KEY-----"
     }
 }
