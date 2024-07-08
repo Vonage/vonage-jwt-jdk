@@ -45,14 +45,14 @@ class Jwt private constructor(val applicationId: String, val privateKeyContents:
     /**
      * Generate a JSON Web Signature from the JWT's properties.
      */
-    fun generate(): String {
+    @JvmOverloads
+    fun generate(keyConverter: KeyConverter = KeyConverter()): String {
         var jwtBuilder = Jwts.builder()
             .header().add("type", "JWT").and()
             .claims().add("application_id", applicationId)
             .add(fixClaims()).and()
 
         if (privateKeyContents.isNotBlank()) {
-            val keyConverter = KeyConverter()
             val privateKey = keyConverter.privateKey(privateKeyContents)
             jwtBuilder = jwtBuilder.signWith(privateKey, Jwts.SIG.RS256)
         }
