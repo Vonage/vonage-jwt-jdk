@@ -29,10 +29,10 @@ import java.security.Key
 import java.util.*
 import kotlin.test.assertEquals
 
-private const val PRIVATE_KEY_HEADER = "-----BEGIN PRIVATE KEY-----\n"
+private const val PRIVATE_KEY_HEADER = "-----BEGIN PRIVATE KEY-----"
 private const val PRIVATE_KEY_FOOTER = "-----END PRIVATE KEY-----"
 private const val PRIVATE_KEY_PATH = "src/test/resources/private.key"
-private const val PUBLIC_KEY_HEADER = "-----BEGIN PUBLIC KEY-----\n"
+private const val PUBLIC_KEY_HEADER = "-----BEGIN PUBLIC KEY-----"
 private const val PUBLIC_KEY_FOOTER = "-----END PUBLIC KEY-----"
 private const val PUBLIC_KEY_PATH = "src/test/resources/public.key"
 
@@ -43,15 +43,13 @@ class KeyConverterTest {
     private fun String.removeCrlf(): String = replace("\\r".toRegex(), "")
         .replace("\\n".toRegex(), "")
 
-    val sanitizedPrivateKey = privateKeyContents
+    val sanitizedPrivateKey = privateKeyContents.removeCrlf()
         .replace(PRIVATE_KEY_HEADER, "")
         .replace(PRIVATE_KEY_FOOTER, "")
-        .removeCrlf()
 
-    val sanitizedPublicKey = publicKeyContents
+    val sanitizedPublicKey = publicKeyContents.removeCrlf()
         .replace(PUBLIC_KEY_HEADER, "")
         .replace(PUBLIC_KEY_FOOTER, "")
-        .removeCrlf()
 
     lateinit var keyConverter: KeyConverter
 

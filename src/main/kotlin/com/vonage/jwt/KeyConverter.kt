@@ -51,9 +51,9 @@ class KeyConverter(private val keyFactory: KeyFactory = KeyFactory.getInstance("
     private fun publicKeySpec(key: String) = X509EncodedKeySpec(decode(key))
 
     companion object {
-        private const val PRIVATE_KEY_HEADER: String = "-----BEGIN PRIVATE KEY-----\n"
+        private const val PRIVATE_KEY_HEADER: String = "-----BEGIN PRIVATE KEY-----"
         private const val PRIVATE_KEY_FOOTER = "-----END PRIVATE KEY-----"
-        private const val PUBLIC_KEY_HEADER: String = "-----BEGIN PUBLIC KEY-----\n"
+        private const val PUBLIC_KEY_HEADER: String = "-----BEGIN PUBLIC KEY-----"
         private const val PUBLIC_KEY_FOOTER = "-----END PUBLIC KEY-----"
     }
 }
