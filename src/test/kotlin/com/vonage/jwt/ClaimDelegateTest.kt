@@ -22,16 +22,46 @@
 package com.vonage.jwt
 
 import org.junit.Test
-import org.mockito.BDDMockito.given
-import org.mockito.Mockito
 import java.nio.file.Paths
 import java.time.ZonedDateTime
-import kotlin.reflect.KProperty
 import kotlin.test.assertEquals
 
 private const val PRIVATE_KEY_PATH = "src/test/resources/private.key"
 
-class DateClaimDelegateTest {
+class ClaimDelegateTest {
+
+    @Test
+    fun `when subject property is requested the sub value is read from the claim map`() {
+        val jwt = Jwt.builder()
+            .applicationId("application-id")
+            .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
+            .claims(mapOf("sub" to "subject"))
+            .build()
+
+        assertEquals("subject", jwt.subject)
+    }
+
+    @Test
+    fun `when id property is requested the jti value is read from the claim map`() {
+        val jwt = Jwt.builder()
+            .applicationId("application-id")
+            .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
+            .claims(mapOf("jti" to "id"))
+            .build()
+
+        assertEquals("id", jwt.id)
+    }
+
+    @Test(expected = NoSuchElementException::class)
+    fun `when the property does not exist on the map a NoSuchElementException is thrown`() {
+        val jwt = Jwt.builder()
+            .applicationId("application-id")
+            .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
+            .build()
+
+        jwt.id // Throws exception
+    }
+
     @Test
     fun `when issuedAt property is requested the iat value is read from the claim map`() {
         val now = ZonedDateTime.now()
@@ -66,25 +96,5 @@ class DateClaimDelegateTest {
             .build()
 
         assertEquals(now, jwt.notBefore)
-    }
-
-    @Test(expected = NoSuchElementException::class)
-    fun `when the property does not exist on the map a NoSuchElementException is thrown`() {
-        val jwt = Jwt.builder()
-            .applicationId("application-id")
-            .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
-            .build()
-
-        jwt.expiresAt // Throws exception
-    }
-
-    @Test(expected = NoSuchElementException::class)
-    fun `when delegate gets a property that cant be translated a NoSuchElementException is thrown`() {
-        val jwt = Jwt.builder().applicationId("application-id").privateKeyPath(Paths.get(PRIVATE_KEY_PATH)).build()
-
-        val mockProperty = Mockito.mock(KProperty::class.java)
-        given(mockProperty.name).willReturn("fooBar")
-
-        DateClaimDelegate().getValue(jwt, mockProperty) // Throws exception
     }
 }

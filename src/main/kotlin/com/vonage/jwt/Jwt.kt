@@ -26,25 +26,52 @@ import io.jsonwebtoken.security.SignatureException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.Instant
 import java.time.ZonedDateTime
+import java.util.*
 import javax.crypto.spec.SecretKeySpec
+import kotlin.collections.LinkedHashMap
 
 /**
  * Class representing a JWT for interacting with the Vonage API. Construct using Jwt.builder
  */
-class Jwt private constructor(val applicationId: String, val privateKeyContents: String, var claims: Map<String, Any>) {
-    val issuedAt: ZonedDateTime by DateClaimDelegate()
-    val id: String by StringClaimDelegate()
-    val notBefore: ZonedDateTime by DateClaimDelegate()
-    val expiresAt: ZonedDateTime by DateClaimDelegate()
-    val subject: String by StringClaimDelegate()
+class Jwt private constructor(val applicationId: String, val privateKeyContents: String, val claims: Map<String, Any>) {
+    val issuedAt: ZonedDateTime by lazy { getClaimOrThrowException("iat") }
+    val id: String by lazy { getClaimOrThrowException("jti") }
+    val notBefore: ZonedDateTime by lazy { getClaimOrThrowException("nbf") }
+    val expiresAt: ZonedDateTime by lazy { getClaimOrThrowException("exp") }
+    val subject: String by lazy { getClaimOrThrowException("sub") }
 
     /**
      * Generate a JSON Web Signature from the JWT's properties.
      */
-    @JvmOverloads
-    fun generate(jwtGenerator: JwtGenerator = JwtGenerator()): String {
-        return jwtGenerator.generate(this)
+    fun generate(): String {
+        var jwtBuilder = Jwts.builder()
+            .header().add("type", "JWT").and()
+            .claims().add("application_id", applicationId)
+            .add(fixClaims()).and()
+
+        if (privateKeyContents.isNotBlank()) {
+            val keyConverter = KeyConverter()
+            val privateKey = keyConverter.privateKey(privateKeyContents)
+            jwtBuilder = jwtBuilder.signWith(privateKey, Jwts.SIG.RS256)
+        }
+        return jwtBuilder.compact()
+    }
+
+    private fun <T> getClaimOrThrowException(key: String): T =
+        (claims[key] ?: throw NoSuchElementException("Claim $key is not set.")) as T
+
+    private fun fixClaims() : Map<String, Any> {
+        val normalClaims = LinkedHashMap<String, Any>()
+        normalClaims.putAll(claims)
+        val timeKeys = listOf("iat", "exp", "nbf")
+        val convertedClaims = claims.filter { it.key in timeKeys && it.value is ZonedDateTime }
+            .mapValues { (it.value as ZonedDateTime).toEpochSecond() }
+        normalClaims.putAll(convertedClaims)
+        normalClaims.putIfAbsent("iat", Instant.now().epochSecond)
+        normalClaims.putIfAbsent("jti", UUID.randomUUID().toString())
+        return normalClaims
     }
 
     class Builder(
@@ -159,7 +186,7 @@ class Jwt private constructor(val applicationId: String, val privateKeyContents:
                 true
             }
             catch (ex : SignatureException) {
-                false;
+                false
             }
     }
 }
