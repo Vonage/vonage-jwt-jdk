@@ -43,13 +43,15 @@ class KeyConverterTest {
     private fun String.removeCrlf(): String = replace("\\r".toRegex(), "")
         .replace("\\n".toRegex(), "")
 
-    val sanitizedPrivateKey = privateKeyContents.removeCrlf()
+    val sanitizedPrivateKey = privateKeyContents
         .replace(PRIVATE_KEY_HEADER, "")
         .replace(PRIVATE_KEY_FOOTER, "")
+        .removeCrlf()
 
-    val sanitizedPublicKey = publicKeyContents.removeCrlf()
+    val sanitizedPublicKey = publicKeyContents
         .replace(PUBLIC_KEY_HEADER, "")
         .replace(PUBLIC_KEY_FOOTER, "")
+        .removeCrlf()
 
     lateinit var keyConverter: KeyConverter
 
