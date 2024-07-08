@@ -43,12 +43,12 @@ class KeyConverterTest {
     val sanitizedPrivateKey = privateKeyContents
         .replace(PRIVATE_KEY_HEADER, "")
         .replace(PRIVATE_KEY_FOOTER, "")
-        .replace("\\s".toRegex(), "")
+        .replace("\\s+".toRegex(), "")
 
     val sanitizedPublicKey = publicKeyContents
         .replace(PUBLIC_KEY_HEADER, "")
         .replace(PUBLIC_KEY_FOOTER, "")
-        .replace("\\s".toRegex(), "")
+        .replace("\\s+".toRegex(), "")
 
     lateinit var keyConverter: KeyConverter
 
