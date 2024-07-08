@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.1.2] - 2024-07-08
-- Use UTF-8 encoding for keys
+- Fix decoding of keys with CRLF characters
 - Internal refactoring
 - Bumped `jjwt` version to 0.12.6
 - Bumped Kotlin version to 2.0.0
