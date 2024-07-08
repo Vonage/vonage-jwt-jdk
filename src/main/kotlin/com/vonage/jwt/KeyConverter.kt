@@ -47,7 +47,7 @@ class KeyConverter(private val keyFactory: KeyFactory = KeyFactory.getInstance("
         .replace(PUBLIC_KEY_FOOTER, "")
         .replace("\\s".toRegex(), "")
 
-    private fun decode(key: String) = Base64.getDecoder().decode(key.toByteArray(StandardCharsets.UTF_8))
+    private fun decode(key: String): ByteArray = Base64.getDecoder().decode(key)
     private fun privateKeySpec(key: String) = PKCS8EncodedKeySpec(decode(key))
     private fun publicKeySpec(key: String) = X509EncodedKeySpec(decode(key))
 

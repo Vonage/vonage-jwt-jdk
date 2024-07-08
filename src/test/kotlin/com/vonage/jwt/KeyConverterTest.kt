@@ -43,16 +43,16 @@ class KeyConverterTest {
     val sanitizedPrivateKey = privateKeyContents
         .replace(PRIVATE_KEY_HEADER, "")
         .replace(PRIVATE_KEY_FOOTER, "")
-        .replace("\\s+".toRegex(), "")
+        .replace("\\s".toRegex(), "")
 
     val sanitizedPublicKey = publicKeyContents
         .replace(PUBLIC_KEY_HEADER, "")
         .replace(PUBLIC_KEY_FOOTER, "")
-        .replace("\\s+".toRegex(), "")
+        .replace("\\s".toRegex(), "")
 
     lateinit var keyConverter: KeyConverter
 
-    private fun Key.encodeToString() = String(Base64.getEncoder().encode(encoded), StandardCharsets.UTF_8)
+    private fun Key.encodeToString() = Base64.getEncoder().encodeToString(encoded)
 
     @Before
     fun setup() {
