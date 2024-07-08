@@ -24,6 +24,8 @@ package com.vonage.jwt
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import java.nio.charset.StandardCharsets
+import java.security.Key
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -50,6 +52,8 @@ class KeyConverterTest {
 
     lateinit var keyConverter: KeyConverter
 
+    private fun Key.encodeToString() = String(Base64.getEncoder().encode(encoded), StandardCharsets.UTF_8)
+
     @Before
     fun setup() {
         keyConverter = KeyConverter()
@@ -60,7 +64,7 @@ class KeyConverterTest {
         val key = keyConverter.privateKey(privateKeyContents)
 
         assertEquals("PKCS#8", key.format)
-        assertEquals(sanitizedPrivateKey, Base64.getEncoder().encodeToString(key.encoded))
+        assertEquals(sanitizedPrivateKey, key.encodeToString())
     }
 
     @Test
@@ -68,7 +72,7 @@ class KeyConverterTest {
         val key = keyConverter.privateKey(sanitizedPrivateKey)
 
         assertEquals("PKCS#8", key.format)
-        assertEquals(sanitizedPrivateKey, Base64.getEncoder().encodeToString(key.encoded))
+        assertEquals(sanitizedPrivateKey, key.encodeToString())
     }
 
     @Test
@@ -76,7 +80,7 @@ class KeyConverterTest {
         val key = keyConverter.publicKey(publicKeyContents)
 
         assertEquals("X.509", key.format)
-        assertEquals(sanitizedPublicKey, Base64.getEncoder().encodeToString(key.encoded))
+        assertEquals(sanitizedPublicKey, key.encodeToString())
     }
 
     @Test
@@ -84,6 +88,6 @@ class KeyConverterTest {
         val key = keyConverter.publicKey(publicKeyContents)
 
         assertEquals("X.509", key.format)
-        assertEquals(sanitizedPublicKey, Base64.getEncoder().encodeToString(key.encoded))
+        assertEquals(sanitizedPublicKey, key.encodeToString())
     }
 }

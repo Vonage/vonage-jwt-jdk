@@ -22,6 +22,7 @@
 package com.vonage.jwt
 
 import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 import java.security.KeyFactory
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
@@ -46,9 +47,7 @@ class KeyConverter(private val keyFactory: KeyFactory = KeyFactory.getInstance("
         .replace(PUBLIC_KEY_FOOTER, "")
         .replace("\\s".toRegex(), "")
 
-    private fun decode(key: String) = Base64.getDecoder().decode(
-        key.toByteArray(Charset.forName("UTF-8"))
-    )
+    private fun decode(key: String) = Base64.getDecoder().decode(key.toByteArray(StandardCharsets.UTF_8))
     private fun privateKeySpec(key: String) = PKCS8EncodedKeySpec(decode(key))
     private fun publicKeySpec(key: String) = X509EncodedKeySpec(decode(key))
 
