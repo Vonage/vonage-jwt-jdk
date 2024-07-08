@@ -1,7 +1,11 @@
 # Vonage JWT JDK Library
 
+![Java](https://img.shields.io/badge/java-8%2B-red)
 [![Maven Central](https://img.shields.io/maven-central/v/com.vonage/jwt.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.vonage%22%20AND%20a:%22jwtr%22)
-[![codecov](https://codecov.io/gh/Vonage/vonage-jwt-jdk/branch/master/graph/badge.svg)](https://codecov.io/gh/Vonage/vonage-jwt-jdk)
+[![codecov](https://codecov.io/gh/Vonage/vonage-jwt-jdk/graph/badge.svg)](https://codecov.io/gh/Vonage/vonage-jwt-jdk)
+[![Build Status](https://github.com/Vonage/vonage-jwt-jdk/actions/workflows/build.yml/badge.svg)](https://github.com/Vonage/vonage-jwt-jdk/actions/workflows/build.yml)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 This library provides a wrapper for generating JWTs using Vonage-specific claims.
 
