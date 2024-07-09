@@ -8,6 +8,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 This library provides a wrapper for generating JWTs using Vonage-specific claims.
+It is mainly used by the [Vonage Java Server SDK](https://github.com/Vonage/vonage-java-sdk).
 
 Learn more about [Authenticating with JSON Web Tokens](https://developer.vonage.com/concepts/guides/authentication#json-web-tokens-jwt).
 
