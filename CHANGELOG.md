@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.3] - 2024-07-09
+- Remove all spaces and tabs when parsing keys
+
 ## [1.1.2] - 2024-07-08
 - Fix decoding of keys with CRLF characters
 - Internal refactoring
