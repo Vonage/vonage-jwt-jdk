@@ -40,16 +40,17 @@ class KeyConverterTest {
     val privateKeyContents = File(PRIVATE_KEY_PATH).readText()
     val publicKeyContents = File(PUBLIC_KEY_PATH).readText()
 
-    private fun String.removeCrlf(): String = replace("\\r".toRegex(), "")
-        .replace("\\n".toRegex(), "")
+    private fun String.removeSpaces(): String = replace("\\s+".toRegex(), "")
 
-    val sanitizedPrivateKey = privateKeyContents.removeCrlf()
+    val sanitizedPrivateKey = privateKeyContents
         .replace(PRIVATE_KEY_HEADER, "")
         .replace(PRIVATE_KEY_FOOTER, "")
+        .removeSpaces()
 
-    val sanitizedPublicKey = publicKeyContents.removeCrlf()
+    val sanitizedPublicKey = publicKeyContents
         .replace(PUBLIC_KEY_HEADER, "")
         .replace(PUBLIC_KEY_FOOTER, "")
+        .removeSpaces()
 
     lateinit var keyConverter: KeyConverter
 
