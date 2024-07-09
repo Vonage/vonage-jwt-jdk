@@ -19,7 +19,7 @@
     <licenses>
         <license>
             <name>MIT</name>
-            <url>https://raw.githubusercontent.com/Vonage/vonage-jwt-jdk/main/LICENSE.md</url>
+            <url>${project.url}/blob/main/LICENSE.md</url>
         </license>
     </licenses>
     <organization>
