@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.vonage:jwt:1.1.2'
+    implementation 'com.vonage:jwt:1.1.3'
 }
 ```
 
@@ -31,34 +31,8 @@ For Maven:
 <dependency>
   <groupId>com.vonage</groupId>
   <artifactId>jwt</artifactId>
-  <version>1.1.2</version>
+  <version>1.1.3</version>
 </dependency>
-```
-
-### Snapshot Repository
-
-Snapshot releases happen periodically to test new functionality. If you'd like to use these versions, you can add the snapshot repository.
-
-For Gradle:
-
-```groovy
-repositories {
-  maven {
-    url 'https://oss.sonatype.org/content/repositories/snapshots/'
-  }
-}
-```
-
-For Maven:
-
-```xml
-<repository>
-  <id>sonatype-snapshot</id>
-  <url>http://oss.sonatype.org/content/repositories/snapshots</url>
-  <snapshots>
-    <enabled>true</enabled>
-  </snapshots>
-</repository>
 ```
 
 ## Usage
