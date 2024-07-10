@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0] - 2024-07-11
+- Rewrite in Java
+- Underlying library and implementation based on `com.auth0:java-jwt`
+- Time-based claims returned as `Instant`
+
 ## [1.1.3] - 2024-07-09
 - Remove all spaces and tabs when parsing keys
 

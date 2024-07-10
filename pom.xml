@@ -6,10 +6,9 @@
     <groupId>com.vonage</groupId>
     <artifactId>jwt</artifactId>
     <version>2.0.0</version>
-    <packaging>jar</packaging>
 
     <name>jwt</name>
-    <description>Library for creating JWTs for use with Vonage APIs</description>
+    <description>Java library for creating JWTs for use with Vonage APIs</description>
     <url>https://github.com/vonage/vonage-jwt-jdk</url>
     <scm>
         <connection>scm:git:git@github.com:Vonage/vonage-jwt-jdk</connection>

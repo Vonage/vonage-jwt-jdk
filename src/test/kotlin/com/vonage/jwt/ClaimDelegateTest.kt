@@ -24,8 +24,6 @@ package com.vonage.jwt
 import org.junit.Test
 import java.nio.file.Paths
 import java.time.Instant
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 import kotlin.test.assertEquals
