@@ -27,6 +27,7 @@ import java.io.File
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -34,15 +35,17 @@ private const val PRIVATE_KEY_PATH = "src/test/resources/private.key"
 private const val PUBLIC_KEY_PATH = "src/test/resources/public.key"
 
 class JwtGeneratorTest {
-    val privateKeyContents = File(PRIVATE_KEY_PATH).readText()
-    val publicKeyContents = File(PUBLIC_KEY_PATH).readText()
+    private val applicationId = "00000000-0000-4000-8000-000000000000"
+    private val privateKeyContents = File(PRIVATE_KEY_PATH).readText()
+    private val publicKeyContents = File(PUBLIC_KEY_PATH).readText()
 
     @Test
     fun `when a jwt has all custom properties those properties are on the generated token`() {
         val expectedToken =
-            "eyJ0eXBlIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhcHBsaWNhdGlvbl9pZCI6ImFwcGxpY2F0aW9uLWlkIiwic3ViIjoic3ViamVjdCIsImV4cCI6NjM2NTA4ODAwLCJuYmYiOjYzNjUwODgwMCwiaWF0Ijo2MzY1MDg4MDAsImp0aSI6ImlkIiwiZm9vIjoiYmFyIn0.TTQqqxtcHeaT9UMU7JIQJILs54U2i-yK-suRJM4xyBxYYTTKCy9emGWIOsiROPOxVahOPzjvGOvNQRilceBaQ2JoYPnrCNn8o0qfctxxRhEOQNHIxOvYfYXjncnLTmY2jiG7q4JVN3_GNr-uIoupKnbXOgcKm-rhDBOu4vlMShVOaThb9HqMMyy0lbfIR6XR4IXiFmOSJ3rQIIqqXzAWWwZmj-_u5-5U2kDc6XR4UWW711zrrR3puvAhbIdzy8gVmGFDXBro8137dv6RKOw4l8KskYbe5o5oF2fQsf6Fmjp5R5ZVSa9Kt9_D-XxvADGj8fwEEePsZ0-Xey9hFN5V-A"
+            "eyJ0eXBlIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhcHBsaWNhdGlvbl9pZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMCIsInN1YiI6InN1YmplY3QiLCJleHAiOjYzNjUwODgwMCwibmJmIjo2MzY1MDg4MDAsImlhdCI6NjM2NTA4ODAwLCJqdGkiOiJpZCIsImZvbyI6ImJhciJ9.UfQRKa0_KMOGPikRrt5iOgIMx1_nIYJI7bVgazMZpJQCe0-XaqBQPgnRicbHfZcoptq0v-mHbcuMUE3OjUqyUlv6WHwVSGAJg4QH_4rRRvK9aD7Puc6Wvq8AYE41TJkPbkdpCIRMVEuMJmZqCT3M5Sh33pbPbMZG0VQrgCQkMvHReeiequ9XlpFqFg7_E5_3G4PHsr6XQDHpfwXDmDMnh7f-5yFNzY7Nn4WAB6EMtlrxM6Ic-cFTSMGAauZZxcAV2ydXKX7ainDJ3VlsKVajTbyUaBCztBkmhmSqQJ4kDZYpxH6HlmMqy1Jd2AtP419sXX_1nw6pWSaFJvOm9QN2eQ"
+
         val jwt = Jwt.builder()
-            .applicationId("application-id")
+            .applicationId(applicationId)
             .privateKeyContents(privateKeyContents)
             .subject("subject")
             .expiresAt(testDateInUtc())
@@ -59,10 +62,10 @@ class JwtGeneratorTest {
     @Test
     fun `when a jwt is given a time in utc then the expiration, not before, issued at, and custom claim are in utc`() {
         val expectedToken =
-            "eyJ0eXBlIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhcHBsaWNhdGlvbl9pZCI6ImFwcGxpY2F0aW9uLWlkIiwiZXhwIjo2MzY1MDg4MDAsIm5iZiI6NjM2NTA4ODAwLCJpYXQiOjYzNjUwODgwMCwianRpIjoiaWQifQ.JUrsXb791U_MNJqamJO903T892I2oJFiGmm9nAoZyClat_hk2vAsjY4kfmLJ0PPg3J--FQnVyNBmTyZKdkk60Iu2kMdC9Ysswts9Kd_1h8IoGg85exlj1TLhbx-GLPLKrEzwjtsULOAt_2R-FAhWhBX_kYAxCG19negf0jDy-t96JksNsVy-BJYGUZvUXaHriXurovd1EqcBhuPkS6QQPDl-6vROOLf7x_0uJlOSPkCs5zKsEz5E6VHBdWxezNtOtRAO8-Yj-zHUfVBABuDQIvELAUVOxvB-rxOYPXoM56fWUbXbf9zOBAD57DPublqre4USW5uErcoIc0LjmGMtEg"
+            "eyJ0eXBlIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhcHBsaWNhdGlvbl9pZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMCIsImV4cCI6NjM2NTA4ODAwLCJuYmYiOjYzNjUwODgwMCwiaWF0Ijo2MzY1MDg4MDAsImp0aSI6ImlkIn0.pYAmQ6hikVxScJq8pGmo1qJhPss38jMSXIAbORhko724vVFVpK4oRuyE0wuOZVotXhEc-b-Epw6pXQJ5EZ5WitHI4ZX-8nyYbaFNUfR9TwzK_79kCLvBgIDFK3p3TVm61PZ-9lk4Gtfg2tNIlD11zoBa0OMMKr-9KKWHyIE7KBpUZLG_YoNx8rBAfaPYGrhpHOUAQMYQGT9Nv5aqjwgH-dgi6gI4paRNos2Wxdq4k15Oz-YKrkGx0Rj497ovGc4SWPFcv_SFnXJTk_gVCOj5_cHEnhIEumbuNVCz6UVGj7yhQVgiuIvQcNOAy3sV9EDMZs6e2QPtZ4ea1QhL0o1W1w"
 
         val jwt = Jwt.builder()
-            .applicationId("application-id")
+            .applicationId(applicationId)
             .privateKeyContents(privateKeyContents)
             .expiresAt(testDateInUtc())
             .notBefore(testDateInUtc())
@@ -77,10 +80,10 @@ class JwtGeneratorTest {
     @Test
     fun `when a jwt is given a time in est then the expiration, not before, issued at, and custom claim are in utc`() {
         val expectedToken =
-            "eyJ0eXBlIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhcHBsaWNhdGlvbl9pZCI6ImFwcGxpY2F0aW9uLWlkIiwiZXhwIjo2MzY1MjY4MDAsIm5iZiI6NjM2NTI2ODAwLCJpYXQiOjYzNjUyNjgwMCwianRpIjoiaWQifQ.S3buxZvdjg1ycJC8c-8YxlQYbBkTKFyen9KSa0616pOmhSkUB5wpAYPsiLbQsNYJ6RaD-YJ95mXYCsnEnqcsu122a6vT2EncFOWPk72Rxo8kl6Urr8O21v4m-ZPeiCUgpDP3gEkf9Rj2xrXiDQQ6aaab6bHpC3lD9gFBsbEoSkqsneEIuBZHcvZHyRD5C0NRIdpe-K2gTMdxf1uvoZYFldaKkM-S157dvqvBY3DoghMjIUm6OYFpbBo9pIErwCN5-rYPKya3ydV6zEMpAwTJOqr68B4AKp6pCpn_ewVX6lwqt8wDSTeOKC_3s3g9CuNKntUGDy7R_34wZliL5eGqSQ"
+            "eyJ0eXBlIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhcHBsaWNhdGlvbl9pZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMCIsImV4cCI6NjM2NTI2ODAwLCJuYmYiOjYzNjUyNjgwMCwiaWF0Ijo2MzY1MjY4MDAsImp0aSI6ImlkIn0.XCstip9EYuCwn2mU10roc8JrOobgw-kawSEf9aC0QkshkouzHFoTe0wrtu3wJk_CuBodpudWWF2fQ3jZ-L4OrGKZUrb7KYU9Melmh7DrjkRIAmlSaNXoGUgJiz65uIgZFVt-fas3D3jYOeSc9OVQHCdrYJ4zgYtBNkKH5jFah-Kj038PX4I_MOpd4iz3X0ghx7aLl2HHS8VzGYZ_UVNrknJ7p7Ccxgq_hKNNqf0mT9zFM7OxqGVyn67-mF4X7ZE-DoD76KUUWUQBCINxTlVdEo2tSzAwFwCAe-6uN04OFstF38NKN96Prip-XSi3lvzrFG2prX4Us0dj0BjBighNmw"
 
         val jwt = Jwt.builder()
-            .applicationId("application-id")
+            .applicationId(applicationId)
             .privateKeyContents(privateKeyContents)
             .expiresAt(testDateInEst())
             .notBefore(testDateInEst())
@@ -95,7 +98,7 @@ class JwtGeneratorTest {
     @Test
     fun `when two jwts are generated for the same issued time, but different time zones, the tokens are the same`() {
         val builder = Jwt.builder()
-            .applicationId("application-id")
+            .applicationId(applicationId)
             .id("id")
             .privateKeyContents(privateKeyContents)
 
@@ -108,7 +111,7 @@ class JwtGeneratorTest {
     @Test
     fun `when a jwt only has an application id and secret the other required properties are on the generated token`() {
         val jwt = Jwt.builder()
-            .applicationId("application-id")
+            .applicationId(applicationId)
             .privateKeyContents(privateKeyContents)
             .build()
 
@@ -118,7 +121,7 @@ class JwtGeneratorTest {
         val claims = Jwts.parser().verifyWith(rsaKey).build().parseSignedClaims(token)
         assertEquals("JWT", claims.header["type"])
         assertEquals("RS256", claims.header["alg"])
-        assertEquals("application-id", claims.payload["application_id"])
+        assertEquals(applicationId, claims.payload["application_id"])
         assertTrue(claims.payload.containsKey("iat"))
         assertTrue(claims.payload.containsKey("jti"))
         assertTrue(Jwts.parser().build().isSigned(token))

@@ -24,16 +24,18 @@ package com.vonage.jwt
 import org.junit.Test
 import java.nio.file.Paths
 import java.time.ZonedDateTime
+import java.util.UUID
 import kotlin.test.assertEquals
 
 private const val PRIVATE_KEY_PATH = "src/test/resources/private.key"
 
 class ClaimDelegateTest {
-
+    private val applicationId = UUID.randomUUID()
+    
     @Test
     fun `when subject property is requested the sub value is read from the claim map`() {
         val jwt = Jwt.builder()
-            .applicationId("application-id")
+            .applicationId(applicationId)
             .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
             .claims(mapOf("sub" to "subject"))
             .build()
@@ -44,7 +46,7 @@ class ClaimDelegateTest {
     @Test
     fun `when id property is requested the jti value is read from the claim map`() {
         val jwt = Jwt.builder()
-            .applicationId("application-id")
+            .applicationId(applicationId)
             .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
             .claims(mapOf("jti" to "id"))
             .build()
@@ -55,7 +57,7 @@ class ClaimDelegateTest {
     @Test(expected = NoSuchElementException::class)
     fun `when the property does not exist on the map a NoSuchElementException is thrown`() {
         val jwt = Jwt.builder()
-            .applicationId("application-id")
+            .applicationId(applicationId)
             .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
             .build()
 
@@ -66,7 +68,7 @@ class ClaimDelegateTest {
     fun `when issuedAt property is requested the iat value is read from the claim map`() {
         val now = ZonedDateTime.now()
         val jwt = Jwt.builder()
-            .applicationId("application-id")
+            .applicationId(applicationId)
             .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
             .claims(mapOf("iat" to now))
             .build()
@@ -78,7 +80,7 @@ class ClaimDelegateTest {
     fun `when expiresAt property is requested the exp value is read from the claim map`() {
         val now = ZonedDateTime.now()
         val jwt = Jwt.builder()
-            .applicationId("application-id")
+            .applicationId(applicationId)
             .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
             .claims(mapOf("exp" to now))
             .build()
@@ -90,7 +92,7 @@ class ClaimDelegateTest {
     fun `when notBefore property is requested the nbf value is read from the claim map`() {
         val now = ZonedDateTime.now()
         val jwt = Jwt.builder()
-            .applicationId("application-id")
+            .applicationId(applicationId)
             .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
             .claims(mapOf("nbf" to now))
             .build()

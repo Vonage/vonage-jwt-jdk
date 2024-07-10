@@ -33,7 +33,8 @@ import kotlin.test.assertEquals
 private const val PRIVATE_KEY_PATH = "src/test/resources/private.key"
 
 class JwtBuilderTest {
-    lateinit var builder: Jwt.Builder
+    private val applicationId = UUID.randomUUID()
+    private lateinit var builder: Jwt.Builder
 
     @Before
     fun setUp() {
@@ -52,15 +53,20 @@ class JwtBuilderTest {
 
     @Test(expected = IllegalStateException::class)
     fun `when private key is missing an IllegalStateException is thrown upon build`() {
-        builder.applicationId("application-id").build()
+        builder.applicationId(applicationId).build()
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `when application id is not a UUID an IllegalArguementException is thrown`() {
+        builder.applicationId("application-id")
     }
 
     @Test
     fun `when application id and private key are provided jwt is built with them`() {
-        val jwt = builder.applicationId("application-id")
+        val jwt = builder.applicationId(applicationId)
             .privateKeyPath(PRIVATE_KEY_PATH).build()
 
-        assertEquals("application-id", jwt.applicationId)
+        assertEquals(applicationId, jwt.applicationId)
         assertEquals(File(PRIVATE_KEY_PATH).readText(), jwt.privateKeyContents)
     }
 
@@ -174,6 +180,6 @@ class JwtBuilderTest {
         assertNotNull(builder.applicationId(UUID.randomUUID().toString()).unsigned().build());
     }
 
-    private fun builderWithRequiredFields() = builder.applicationId("application-id")
+    private fun builderWithRequiredFields() = builder.applicationId(applicationId)
         .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
 }
