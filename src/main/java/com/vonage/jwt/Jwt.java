@@ -205,6 +205,8 @@ public final class Jwt {
 	 */
 	public static boolean verifySignature(String token, String secret) {
 		try {
+			Objects.requireNonNull(token, "Token cannot be null.");
+			Objects.requireNonNull(secret, "Secret cannot be null.");
 			JWT.require(Algorithm.HMAC256(secret)).build().verify(token);
 			return true;
 		}
