@@ -51,7 +51,7 @@ class KeyConverterTest {
         .replace(PUBLIC_KEY_FOOTER, "")
         .removeSpaces()
 
-    lateinit var keyConverter: KeyConverter
+    private lateinit var keyConverter: KeyConverter
 
     private fun Key.encodeToString() = Base64.getEncoder().encodeToString(encoded)
 
