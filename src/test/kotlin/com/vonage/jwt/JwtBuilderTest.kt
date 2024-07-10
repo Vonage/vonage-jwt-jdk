@@ -26,7 +26,11 @@ import org.junit.Before
 import org.junit.Test
 import java.io.File
 import java.nio.file.Paths
+import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
+import java.time.temporal.Temporal
+import java.time.temporal.TemporalUnit
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -76,9 +80,9 @@ class JwtBuilderTest {
             .claims(mapOf("foo" to "bar", "baz" to "bat"))
             .build()
 
-        assertEquals(2, jwt.customClaims.size)
-        assertEquals("bar", jwt.customClaims["foo"])
-        assertEquals("bat", jwt.customClaims["baz"])
+        assertApplicationId(3, jwt)
+        assertEquals("bar", jwt.claims["foo"])
+        assertEquals("bat", jwt.claims["baz"])
     }
 
     @Test
@@ -88,9 +92,9 @@ class JwtBuilderTest {
             .claims(mapOf("baz" to "bat"))
             .build()
 
-        assertEquals(2, jwt.customClaims.size)
-        assertEquals("bar", jwt.customClaims["foo"])
-        assertEquals("bat", jwt.customClaims["baz"])
+        assertApplicationId(3, jwt)
+        assertEquals("bar", jwt.claims["foo"])
+        assertEquals("bat", jwt.claims["baz"])
     }
 
     @Test
@@ -100,9 +104,9 @@ class JwtBuilderTest {
             .addClaim("baz", "bat")
             .build()
 
-        assertEquals(2, jwt.customClaims.size)
-        assertEquals("bar", jwt.customClaims["foo"])
-        assertEquals("bat", jwt.customClaims["baz"])
+        assertApplicationId(3, jwt)
+        assertEquals("bar", jwt.claims["foo"])
+        assertEquals("bat", jwt.claims["baz"])
     }
 
     @Test
@@ -112,20 +116,20 @@ class JwtBuilderTest {
             .addClaim("baz", "bat")
             .build()
 
-        assertEquals(2, jwt.customClaims.size)
-        assertEquals("bar", jwt.customClaims["foo"])
-        assertEquals("bat", jwt.customClaims["baz"])
+        assertApplicationId(3, jwt)
+        assertEquals("bar", jwt.claims["foo"])
+        assertEquals("bat", jwt.claims["baz"])
     }
 
     @Test
     fun `when issued at is given the jwt is built with it`() {
-        val now = ZonedDateTime.now()
+        val now = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS)
         val jwt = builderWithRequiredFields()
             .issuedAt(now)
             .build()
 
-        assertEquals(0, jwt.customClaims.size)
-        assertEquals(now, jwt.issuedAt)
+        assertApplicationId(2, jwt)
+        assertEquals(now, jwt.issuedAt.atZone(ZoneId.systemDefault()))
     }
 
     @Test
@@ -134,30 +138,30 @@ class JwtBuilderTest {
             .id("id")
             .build()
 
-        assertEquals(0, jwt.customClaims.size)
+        assertApplicationId(2, jwt)
         assertEquals("id", jwt.id)
     }
 
     @Test
     fun `when not before is given the jwt is built with it`() {
-        val now = ZonedDateTime.now()
+        val now = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS)
         val jwt = builderWithRequiredFields()
             .notBefore(now)
             .build()
 
-        assertEquals(0, jwt.customClaims.size)
-        assertEquals(now, jwt.notBefore)
+        assertApplicationId(2, jwt)
+        assertEquals(now, jwt.notBefore.atZone(ZoneId.systemDefault()))
     }
 
     @Test
     fun `when expires at is given the jwt is built with it`() {
-        val now = ZonedDateTime.now()
+        val now = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS)
         val jwt = builderWithRequiredFields()
             .expiresAt(now)
             .build()
 
-        assertEquals(0, jwt.customClaims.size)
-        assertEquals(now, jwt.expiresAt)
+        assertApplicationId(2, jwt)
+        assertEquals(now, jwt.expiresAt.atZone(ZoneId.systemDefault()))
     }
 
     @Test
@@ -166,15 +170,20 @@ class JwtBuilderTest {
             .subject("subject")
             .build()
 
-        assertEquals(0, jwt.customClaims.size)
+        assertApplicationId(2, jwt)
         assertEquals("subject", jwt.subject)
     }
 
     @Test
     fun `when unsigned is true private key is not required`() {
-        assertNotNull(builder.applicationId(UUID.randomUUID().toString()).unsigned().build());
+        assertNotNull(builder.applicationId(applicationId).unsigned().build());
     }
 
     private fun builderWithRequiredFields() = builder.applicationId(applicationId)
         .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
+
+    private fun assertApplicationId(size: Int, jwt: Jwt) {
+        assertEquals(size, jwt.claims.size)
+        assertEquals(applicationId.toString(), jwt.claims[Jwt.APPLICATION_ID_CLAIM] as String)
+    }
 }

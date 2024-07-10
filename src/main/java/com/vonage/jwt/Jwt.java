@@ -25,9 +25,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,101 +33,80 @@ import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-public class Jwt {
-	private final UUID applicationId;
+public final class Jwt {
+	static final String APPLICATION_ID_CLAIM = "application_id";
+
 	private final String privateKeyContents;
-	private final ZonedDateTime issuedAt, expiresAt, notBefore;
-	private final String jwtId, subject;
-	private final Map<String, Object> customClaims;
+	private final JWTCreator.Builder jwtBuilder;
+	private final Algorithm algorithm;
+	private final DecodedJWT jwt;
 
 	private Jwt(Builder builder) {
-		applicationId = builder.applicationId;
 		privateKeyContents = builder.privateKeyContents;
-		subject = builder.subject;
-		jwtId = builder.jwtId;
-		issuedAt = builder.issuedAt;
-		expiresAt = builder.expiresAt;
-		notBefore = builder.notBefore;
-		customClaims = builder.customClaims;
-	}
-
-	public String generate() {
-		return generate(new KeyConverter());
-	}
-
-	protected String generate(KeyConverter keyConverter) {
-		JWTCreator.Builder jwtBuilder = JWT.create()
-				.withClaim("application_id", applicationId.toString())
-				.withIssuedAt(getIssuedAt() != null ? getIssuedAt().toInstant() : Instant.now())
-				.withNotBefore(getNotBefore().toInstant())
-				.withExpiresAt(getExpiresAt().toInstant())
-				.withJWTId(getId() != null ? getId() : UUID.randomUUID().toString())
-				.withHeader(Collections.singletonMap("type", "JWT"));
-
+		// Hack to avoid having to duplicate the builder's properties in this object.
+		jwt = JWT.decode((jwtBuilder = builder.auth0JwtBuilder).sign(Algorithm.none()));
 		try {
-			Method addClaimMethod = JWTCreator.Builder.class.getDeclaredMethod("addClaim", String.class, Object.class);
-			for (Map.Entry<String, ?> entry : customClaims.entrySet()) {
-				addClaimMethod.invoke(jwtBuilder, entry.getKey(), entry.getValue());
-			}
-		}
-		catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
-			throw new IllegalStateException(ex);
-		}
-
-		Algorithm algorithm;
-		try {
-			algorithm = Algorithm.RSA256(keyConverter.privateKey(privateKeyContents));
+			algorithm = privateKeyContents == null || privateKeyContents.trim().isEmpty() ?
+					Algorithm.none() : Algorithm.RSA256(new KeyConverter().privateKey(privateKeyContents));
 		}
 		catch (InvalidKeySpecException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
 
-		return jwtBuilder.sign(algorithm);
+	public String generate() {
+		return jwtBuilder.withJWTId(getId()).withIssuedAt(getIssuedAt()).sign(algorithm);
 	}
 
 	public UUID getApplicationId() {
-		return applicationId;
+		return UUID.fromString(jwt.getClaim(APPLICATION_ID_CLAIM).asString());
 	}
 
 	public String getPrivateKeyContents() {
 		return privateKeyContents;
 	}
 
-	public Map<String, ?> getCustomClaims() {
-		return customClaims;
+	public Map<String, ?> getClaims() {
+		return jwt.getClaims().entrySet().stream().collect(Collectors.toMap(
+				Map.Entry::getKey,
+				e -> e.getValue().as(Object.class)
+		));
 	}
 
 	public String getId() {
-		return jwtId;
+		String jti = jwt.getId();
+		return jti != null ? jti : UUID.randomUUID().toString();
 	}
 
-	public ZonedDateTime getIssuedAt() {
-		return issuedAt;
+	public Instant getIssuedAt() {
+		Instant iat = jwt.getIssuedAtAsInstant();
+		return iat != null ? iat : Instant.now();
 	}
 
-	public ZonedDateTime getNotBefore() {
-		return notBefore;
+	public Instant getNotBefore() {
+		return jwt.getNotBeforeAsInstant();
 	}
 
-	public ZonedDateTime getExpiresAt() {
-		return expiresAt;
+	public Instant getExpiresAt() {
+		return jwt.getExpiresAtAsInstant();
 	}
 
 	public String getSubject() {
-		return subject;
+		return jwt.getSubject();
 	}
 
 	public static class Builder {
-		private final Map<String, Object> customClaims = new LinkedHashMap<>();
+		private final JWTCreator.Builder auth0JwtBuilder = JWT.create();
 		private UUID applicationId;
-		private String privateKeyContents = "", jwtId, subject;
+		private String privateKeyContents = "";
 		private boolean signed = true;
-		private ZonedDateTime issuedAt, expiresAt, notBefore;
 
 		public Builder applicationId(UUID applicationId) {
 			this.applicationId = Objects.requireNonNull(applicationId);
-			return this;
+			return withProperties(b -> b.withClaim(APPLICATION_ID_CLAIM, applicationId.toString()));
 		}
 
 		public Builder applicationId(String applicationId) {
@@ -155,39 +132,38 @@ public class Jwt {
 			return privateKeyPath(Paths.get(privateKeyPath));
 		}
 
+		public Builder withProperties(Consumer<JWTCreator.Builder> jwtBuilder) {
+			jwtBuilder.accept(auth0JwtBuilder);
+			return this;
+		}
+
 		public Builder claims(Map<String, Object> claims) {
-			this.customClaims.putAll(claims);
+			withProperties(b -> b.withPayload(claims));
 			return this;
 		}
 
 		public Builder addClaim(String key, Object value) {
-			this.customClaims.put(key, value);
-			return this;
+			return claims(Collections.singletonMap(key, value));
 		}
 
 		public Builder issuedAt(ZonedDateTime iat) {
-			this.issuedAt = iat;
-			return this;
+			return withProperties(b -> b.withIssuedAt(iat.toInstant()));
 		}
 
 		public Builder id(String jti) {
-			this.jwtId = jti;
-			return this;
+			return withProperties(b -> b.withJWTId(jti));
 		}
 
 		public Builder notBefore(ZonedDateTime nbf) {
-			this.notBefore = nbf;
-			return this;
+			return withProperties(b -> b.withNotBefore(nbf.toInstant()));
 		}
 
 		public Builder expiresAt(ZonedDateTime exp) {
-			this.expiresAt = exp;
-			return this;
+			return withProperties(b -> b.withExpiresAt(exp.toInstant()));
 		}
 
-		public Builder subject(String subject) {
-			this.subject = subject;
-			return this;
+		public Builder subject(String sub) {
+			return withProperties(b -> b.withSubject(sub));
 		}
 
 		public Jwt build() {

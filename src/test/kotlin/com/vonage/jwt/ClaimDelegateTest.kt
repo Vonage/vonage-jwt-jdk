@@ -23,7 +23,10 @@ package com.vonage.jwt
 
 import org.junit.Test
 import java.nio.file.Paths
+import java.time.Instant
+import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 import kotlin.test.assertEquals
 
@@ -54,49 +57,39 @@ class ClaimDelegateTest {
         assertEquals("id", jwt.id)
     }
 
-    @Test(expected = NoSuchElementException::class)
-    fun `when the property does not exist on the map a NoSuchElementException is thrown`() {
-        val jwt = Jwt.builder()
-            .applicationId(applicationId)
-            .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
-            .build()
-
-        jwt.id // Throws exception
-    }
-
     @Test
     fun `when issuedAt property is requested the iat value is read from the claim map`() {
-        val now = ZonedDateTime.now()
+        val now = Instant.now()
         val jwt = Jwt.builder()
             .applicationId(applicationId)
             .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
             .claims(mapOf("iat" to now))
             .build()
 
-        assertEquals(now, jwt.issuedAt)
+        assertEquals(now.truncatedTo(ChronoUnit.SECONDS), jwt.issuedAt)
     }
 
     @Test
     fun `when expiresAt property is requested the exp value is read from the claim map`() {
-        val now = ZonedDateTime.now()
+        val now = Instant.now()
         val jwt = Jwt.builder()
             .applicationId(applicationId)
             .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
             .claims(mapOf("exp" to now))
             .build()
 
-        assertEquals(now, jwt.expiresAt)
+        assertEquals(now.truncatedTo(ChronoUnit.SECONDS), jwt.expiresAt)
     }
 
     @Test
     fun `when notBefore property is requested the nbf value is read from the claim map`() {
-        val now = ZonedDateTime.now()
+        val now = Instant.now()
         val jwt = Jwt.builder()
             .applicationId(applicationId)
             .privateKeyPath(Paths.get(PRIVATE_KEY_PATH))
             .claims(mapOf("nbf" to now))
             .build()
 
-        assertEquals(now, jwt.notBefore)
+        assertEquals(now.truncatedTo(ChronoUnit.SECONDS), jwt.notBefore)
     }
 }

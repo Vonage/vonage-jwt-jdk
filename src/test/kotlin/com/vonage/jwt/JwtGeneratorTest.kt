@@ -36,11 +36,13 @@ class JwtGeneratorTest {
     private val applicationId = "00000000-0000-4000-8000-000000000000"
     private val privateKeyContents = File(PRIVATE_KEY_PATH).readText()
     private val publicKeyContents = File(PUBLIC_KEY_PATH).readText()
+    private val expectedHeader = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9"
 
     @Test
     fun `when a jwt has all custom properties those properties are on the generated token`() {
+        val expectedPayload = "eyJhcHBsaWNhdGlvbl9pZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMCIsInN1YiI6InN1YmplY3QiLCJleHAiOjYzNjUwODgwMCwibmJmIjo2MzY1MDg4MDAsImlhdCI6NjM2NTA4ODAwLCJqdGkiOiJpZCIsImZvbyI6ImJhciJ9"
         val expectedToken =
-            "eyJ0eXBlIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhcHBsaWNhdGlvbl9pZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMCIsInN1YiI6InN1YmplY3QiLCJleHAiOjYzNjUwODgwMCwibmJmIjo2MzY1MDg4MDAsImlhdCI6NjM2NTA4ODAwLCJqdGkiOiJpZCIsImZvbyI6ImJhciJ9.UfQRKa0_KMOGPikRrt5iOgIMx1_nIYJI7bVgazMZpJQCe0-XaqBQPgnRicbHfZcoptq0v-mHbcuMUE3OjUqyUlv6WHwVSGAJg4QH_4rRRvK9aD7Puc6Wvq8AYE41TJkPbkdpCIRMVEuMJmZqCT3M5Sh33pbPbMZG0VQrgCQkMvHReeiequ9XlpFqFg7_E5_3G4PHsr6XQDHpfwXDmDMnh7f-5yFNzY7Nn4WAB6EMtlrxM6Ic-cFTSMGAauZZxcAV2ydXKX7ainDJ3VlsKVajTbyUaBCztBkmhmSqQJ4kDZYpxH6HlmMqy1Jd2AtP419sXX_1nw6pWSaFJvOm9QN2eQ"
+            "$expectedHeader.$expectedPayload.UfQRKa0_KMOGPikRrt5iOgIMx1_nIYJI7bVgazMZpJQCe0-XaqBQPgnRicbHfZcoptq0v-mHbcuMUE3OjUqyUlv6WHwVSGAJg4QH_4rRRvK9aD7Puc6Wvq8AYE41TJkPbkdpCIRMVEuMJmZqCT3M5Sh33pbPbMZG0VQrgCQkMvHReeiequ9XlpFqFg7_E5_3G4PHsr6XQDHpfwXDmDMnh7f-5yFNzY7Nn4WAB6EMtlrxM6Ic-cFTSMGAauZZxcAV2ydXKX7ainDJ3VlsKVajTbyUaBCztBkmhmSqQJ4kDZYpxH6HlmMqy1Jd2AtP419sXX_1nw6pWSaFJvOm9QN2eQ"
 
         val jwt = Jwt.builder()
             .applicationId(applicationId)
@@ -60,7 +62,7 @@ class JwtGeneratorTest {
     @Test
     fun `when a jwt is given a time in utc then the expiration, not before, issued at, and custom claim are in utc`() {
         val expectedToken =
-            "eyJ0eXBlIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhcHBsaWNhdGlvbl9pZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMCIsImV4cCI6NjM2NTA4ODAwLCJuYmYiOjYzNjUwODgwMCwiaWF0Ijo2MzY1MDg4MDAsImp0aSI6ImlkIn0.pYAmQ6hikVxScJq8pGmo1qJhPss38jMSXIAbORhko724vVFVpK4oRuyE0wuOZVotXhEc-b-Epw6pXQJ5EZ5WitHI4ZX-8nyYbaFNUfR9TwzK_79kCLvBgIDFK3p3TVm61PZ-9lk4Gtfg2tNIlD11zoBa0OMMKr-9KKWHyIE7KBpUZLG_YoNx8rBAfaPYGrhpHOUAQMYQGT9Nv5aqjwgH-dgi6gI4paRNos2Wxdq4k15Oz-YKrkGx0Rj497ovGc4SWPFcv_SFnXJTk_gVCOj5_cHEnhIEumbuNVCz6UVGj7yhQVgiuIvQcNOAy3sV9EDMZs6e2QPtZ4ea1QhL0o1W1w"
+            "$expectedHeader.eyJhcHBsaWNhdGlvbl9pZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMCIsImV4cCI6NjM2NTA4ODAwLCJuYmYiOjYzNjUwODgwMCwiaWF0Ijo2MzY1MDg4MDAsImp0aSI6ImlkIn0.pYAmQ6hikVxScJq8pGmo1qJhPss38jMSXIAbORhko724vVFVpK4oRuyE0wuOZVotXhEc-b-Epw6pXQJ5EZ5WitHI4ZX-8nyYbaFNUfR9TwzK_79kCLvBgIDFK3p3TVm61PZ-9lk4Gtfg2tNIlD11zoBa0OMMKr-9KKWHyIE7KBpUZLG_YoNx8rBAfaPYGrhpHOUAQMYQGT9Nv5aqjwgH-dgi6gI4paRNos2Wxdq4k15Oz-YKrkGx0Rj497ovGc4SWPFcv_SFnXJTk_gVCOj5_cHEnhIEumbuNVCz6UVGj7yhQVgiuIvQcNOAy3sV9EDMZs6e2QPtZ4ea1QhL0o1W1w"
 
         val jwt = Jwt.builder()
             .applicationId(applicationId)
@@ -78,7 +80,7 @@ class JwtGeneratorTest {
     @Test
     fun `when a jwt is given a time in est then the expiration, not before, issued at, and custom claim are in utc`() {
         val expectedToken =
-            "eyJ0eXBlIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJhcHBsaWNhdGlvbl9pZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMCIsImV4cCI6NjM2NTI2ODAwLCJuYmYiOjYzNjUyNjgwMCwiaWF0Ijo2MzY1MjY4MDAsImp0aSI6ImlkIn0.XCstip9EYuCwn2mU10roc8JrOobgw-kawSEf9aC0QkshkouzHFoTe0wrtu3wJk_CuBodpudWWF2fQ3jZ-L4OrGKZUrb7KYU9Melmh7DrjkRIAmlSaNXoGUgJiz65uIgZFVt-fas3D3jYOeSc9OVQHCdrYJ4zgYtBNkKH5jFah-Kj038PX4I_MOpd4iz3X0ghx7aLl2HHS8VzGYZ_UVNrknJ7p7Ccxgq_hKNNqf0mT9zFM7OxqGVyn67-mF4X7ZE-DoD76KUUWUQBCINxTlVdEo2tSzAwFwCAe-6uN04OFstF38NKN96Prip-XSi3lvzrFG2prX4Us0dj0BjBighNmw"
+            "$expectedHeader.eyJhcHBsaWNhdGlvbl9pZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMCIsImV4cCI6NjM2NTI2ODAwLCJuYmYiOjYzNjUyNjgwMCwiaWF0Ijo2MzY1MjY4MDAsImp0aSI6ImlkIn0.XCstip9EYuCwn2mU10roc8JrOobgw-kawSEf9aC0QkshkouzHFoTe0wrtu3wJk_CuBodpudWWF2fQ3jZ-L4OrGKZUrb7KYU9Melmh7DrjkRIAmlSaNXoGUgJiz65uIgZFVt-fas3D3jYOeSc9OVQHCdrYJ4zgYtBNkKH5jFah-Kj038PX4I_MOpd4iz3X0ghx7aLl2HHS8VzGYZ_UVNrknJ7p7Ccxgq_hKNNqf0mT9zFM7OxqGVyn67-mF4X7ZE-DoD76KUUWUQBCINxTlVdEo2tSzAwFwCAe-6uN04OFstF38NKN96Prip-XSi3lvzrFG2prX4Us0dj0BjBighNmw"
 
         val jwt = Jwt.builder()
             .applicationId(applicationId)

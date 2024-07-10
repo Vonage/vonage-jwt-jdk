@@ -29,9 +29,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import java.util.Objects;
 
-public class KeyConverter {
+class KeyConverter {
 	private static final String
 			PRIVATE_KEY_HEADER = "-----BEGIN PRIVATE KEY-----",
 			PRIVATE_KEY_FOOTER = "-----END PRIVATE KEY-----",
