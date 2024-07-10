@@ -21,14 +21,16 @@
  */
 package com.vonage.jwt;
 
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.SignatureException;
-import javax.crypto.spec.SecretKeySpec;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -37,12 +39,19 @@ import java.util.*;
 public class Jwt {
 	private final UUID applicationId;
 	private final String privateKeyContents;
-	private final Map<String, Object> claims;
+	private final ZonedDateTime issuedAt, expiresAt, notBefore;
+	private final String jwtId, subject;
+	private final Map<String, Object> customClaims;
 
-	private Jwt(UUID applicationId, String privateKeyContents, Map<String, Object> claims) {
-		this.applicationId = applicationId;
-		this.privateKeyContents = privateKeyContents;
-		this.claims = claims;
+	private Jwt(Builder builder) {
+		applicationId = builder.applicationId;
+		privateKeyContents = builder.privateKeyContents;
+		subject = builder.subject;
+		jwtId = builder.jwtId;
+		issuedAt = builder.issuedAt;
+		expiresAt = builder.expiresAt;
+		notBefore = builder.notBefore;
+		customClaims = builder.customClaims;
 	}
 
 	public String generate() {
@@ -50,19 +59,33 @@ public class Jwt {
 	}
 
 	protected String generate(KeyConverter keyConverter) {
-		JwtBuilder jwtBuilder = Jwts.builder()
-				.header().add("type", "JWT").and()
-				.claims().add("application_id", applicationId)
-				.add(fixClaims()).and();
+		JWTCreator.Builder jwtBuilder = JWT.create()
+				.withClaim("application_id", applicationId.toString())
+				.withIssuedAt(getIssuedAt() != null ? getIssuedAt().toInstant() : Instant.now())
+				.withNotBefore(getNotBefore().toInstant())
+				.withExpiresAt(getExpiresAt().toInstant())
+				.withJWTId(getId() != null ? getId() : UUID.randomUUID().toString())
+				.withHeader(Collections.singletonMap("type", "JWT"));
 
-		if (privateKeyContents != null && !privateKeyContents.trim().isEmpty()) try {
-			RSAPrivateKey privateKey = keyConverter.privateKey(privateKeyContents);
-			jwtBuilder = jwtBuilder.signWith(privateKey, Jwts.SIG.RS256);
+		try {
+			Method addClaimMethod = JWTCreator.Builder.class.getDeclaredMethod("addClaim", String.class, Object.class);
+			for (Map.Entry<String, ?> entry : customClaims.entrySet()) {
+				addClaimMethod.invoke(jwtBuilder, entry.getKey(), entry.getValue());
+			}
+		}
+		catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+			throw new IllegalStateException(ex);
+		}
+
+		Algorithm algorithm;
+		try {
+			algorithm = Algorithm.RSA256(keyConverter.privateKey(privateKeyContents));
 		}
 		catch (InvalidKeySpecException ex) {
 			throw new IllegalStateException(ex);
 		}
-		return jwtBuilder.compact();
+
+		return jwtBuilder.sign(algorithm);
 	}
 
 	public UUID getApplicationId() {
@@ -73,58 +96,36 @@ public class Jwt {
 		return privateKeyContents;
 	}
 
-	public Map<String, ?> getClaims() {
-		return claims;
+	public Map<String, ?> getCustomClaims() {
+		return customClaims;
 	}
 
 	public String getId() {
-		return getClaimOrThrowException("jti");
+		return jwtId;
 	}
 
 	public ZonedDateTime getIssuedAt() {
-		return getClaimOrThrowException("iat");
+		return issuedAt;
 	}
 
 	public ZonedDateTime getNotBefore() {
-		return getClaimOrThrowException("nbf");
+		return notBefore;
 	}
 
 	public ZonedDateTime getExpiresAt() {
-		return getClaimOrThrowException("exp");
+		return expiresAt;
 	}
 
 	public String getSubject() {
-		return getClaimOrThrowException("sub");
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T getClaimOrThrowException(String key) {
-		if (!claims.containsKey(key)) {
-			throw new NoSuchElementException("Claim " + key + " is not set.");
-		}
-		return (T) claims.get(key);
-	}
-
-	private Map<String, Object> fixClaims() {
-		Map<String, Object> normalClaims = new LinkedHashMap<>(claims);
-		List<String> timeKeys = Arrays.asList("iat", "exp", "nbf");
-		Map<String, Object> convertedClaims = new LinkedHashMap<>();
-		for (Map.Entry<String, Object> entry : claims.entrySet()) {
-			if (timeKeys.contains(entry.getKey()) && entry.getValue() instanceof ZonedDateTime) {
-				convertedClaims.put(entry.getKey(), ((ZonedDateTime) entry.getValue()).toEpochSecond());
-			}
-		}
-		normalClaims.putAll(convertedClaims);
-		normalClaims.putIfAbsent("iat", Instant.now().getEpochSecond());
-		normalClaims.putIfAbsent("jti", UUID.randomUUID().toString());
-		return normalClaims;
+		return subject;
 	}
 
 	public static class Builder {
+		private final Map<String, Object> customClaims = new LinkedHashMap<>();
 		private UUID applicationId;
-		private String privateKeyContents = "";
+		private String privateKeyContents = "", jwtId, subject;
 		private boolean signed = true;
-		private final Map<String, Object> claims = new LinkedHashMap<>();
+		private ZonedDateTime issuedAt, expiresAt, notBefore;
 
 		public Builder applicationId(UUID applicationId) {
 			this.applicationId = Objects.requireNonNull(applicationId);
@@ -155,38 +156,43 @@ public class Jwt {
 		}
 
 		public Builder claims(Map<String, Object> claims) {
-			this.claims.putAll(claims);
+			this.customClaims.putAll(claims);
 			return this;
 		}
 
 		public Builder addClaim(String key, Object value) {
-			this.claims.put(key, value);
+			this.customClaims.put(key, value);
 			return this;
 		}
 
 		public Builder issuedAt(ZonedDateTime iat) {
-			return addClaim("iat", iat);
+			this.issuedAt = iat;
+			return this;
 		}
 
 		public Builder id(String jti) {
-			return addClaim("jti", jti);
+			this.jwtId = jti;
+			return this;
 		}
 
 		public Builder notBefore(ZonedDateTime nbf) {
-			return addClaim("nbf", nbf);
+			this.notBefore = nbf;
+			return this;
 		}
 
 		public Builder expiresAt(ZonedDateTime exp) {
-			return addClaim("exp", exp);
+			this.expiresAt = exp;
+			return this;
 		}
 
 		public Builder subject(String subject) {
-			return addClaim("sub", subject);
+			this.subject = subject;
+			return this;
 		}
 
 		public Jwt build() {
 			validate();
-			return new Jwt(applicationId, privateKeyContents, claims);
+			return new Jwt(this);
 		}
 
 		private void validate() {
@@ -223,10 +229,10 @@ public class Jwt {
 	 */
 	public static boolean verifySignature(String token, String secret) {
 		try {
-			SecretKeySpec secretSpec = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
-			Jwts.parser().verifyWith(secretSpec).build().parse(token);
+			JWT.require(Algorithm.HMAC256(secret)).build().verify(token);
 			return true;
-		} catch (SignatureException ex) {
+		}
+		catch (JWTVerificationException ex) {
 			return false;
 		}
 	}

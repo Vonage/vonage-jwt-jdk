@@ -76,9 +76,9 @@ class JwtBuilderTest {
             .claims(mapOf("foo" to "bar", "baz" to "bat"))
             .build()
 
-        assertEquals(2, jwt.claims.size)
-        assertEquals("bar", jwt.claims["foo"])
-        assertEquals("bat", jwt.claims["baz"])
+        assertEquals(2, jwt.customClaims.size)
+        assertEquals("bar", jwt.customClaims["foo"])
+        assertEquals("bat", jwt.customClaims["baz"])
     }
 
     @Test
@@ -88,9 +88,9 @@ class JwtBuilderTest {
             .claims(mapOf("baz" to "bat"))
             .build()
 
-        assertEquals(2, jwt.claims.size)
-        assertEquals("bar", jwt.claims["foo"])
-        assertEquals("bat", jwt.claims["baz"])
+        assertEquals(2, jwt.customClaims.size)
+        assertEquals("bar", jwt.customClaims["foo"])
+        assertEquals("bat", jwt.customClaims["baz"])
     }
 
     @Test
@@ -100,9 +100,9 @@ class JwtBuilderTest {
             .addClaim("baz", "bat")
             .build()
 
-        assertEquals(2, jwt.claims.size)
-        assertEquals("bar", jwt.claims["foo"])
-        assertEquals("bat", jwt.claims["baz"])
+        assertEquals(2, jwt.customClaims.size)
+        assertEquals("bar", jwt.customClaims["foo"])
+        assertEquals("bat", jwt.customClaims["baz"])
     }
 
     @Test
@@ -112,9 +112,9 @@ class JwtBuilderTest {
             .addClaim("baz", "bat")
             .build()
 
-        assertEquals(2, jwt.claims.size)
-        assertEquals("bar", jwt.claims["foo"])
-        assertEquals("bat", jwt.claims["baz"])
+        assertEquals(2, jwt.customClaims.size)
+        assertEquals("bar", jwt.customClaims["foo"])
+        assertEquals("bat", jwt.customClaims["baz"])
     }
 
     @Test
@@ -124,8 +124,7 @@ class JwtBuilderTest {
             .issuedAt(now)
             .build()
 
-        assertEquals(1, jwt.claims.size)
-        assertEquals(now, jwt.claims["iat"])
+        assertEquals(0, jwt.customClaims.size)
         assertEquals(now, jwt.issuedAt)
     }
 
@@ -135,8 +134,7 @@ class JwtBuilderTest {
             .id("id")
             .build()
 
-        assertEquals(1, jwt.claims.size)
-        assertEquals("id", jwt.claims["jti"])
+        assertEquals(0, jwt.customClaims.size)
         assertEquals("id", jwt.id)
     }
 
@@ -147,8 +145,7 @@ class JwtBuilderTest {
             .notBefore(now)
             .build()
 
-        assertEquals(1, jwt.claims.size)
-        assertEquals(now, jwt.claims["nbf"])
+        assertEquals(0, jwt.customClaims.size)
         assertEquals(now, jwt.notBefore)
     }
 
@@ -159,8 +156,7 @@ class JwtBuilderTest {
             .expiresAt(now)
             .build()
 
-        assertEquals(1, jwt.claims.size)
-        assertEquals(now, jwt.claims["exp"])
+        assertEquals(0, jwt.customClaims.size)
         assertEquals(now, jwt.expiresAt)
     }
 
@@ -170,8 +166,7 @@ class JwtBuilderTest {
             .subject("subject")
             .build()
 
-        assertEquals(1, jwt.claims.size)
-        assertEquals("subject", jwt.claims["sub"])
+        assertEquals(0, jwt.customClaims.size)
         assertEquals("subject", jwt.subject)
     }
 
