@@ -58,7 +58,17 @@ public final class Jwt {
 	}
 
 	public String generate() {
-		return jwtBuilder.withJWTId(getId()).withIssuedAt(getIssuedAt()).sign(algorithm);
+		String jti = getId();
+		if (jti == null || jti.isEmpty()) {
+			jwtBuilder.withJWTId(UUID.randomUUID().toString());
+		}
+
+		Instant iat = getIssuedAt();
+		if (iat == null) {
+			jwtBuilder.withIssuedAt(Instant.now());
+		}
+
+		return jwtBuilder.sign(algorithm);
 	}
 
 	public UUID getApplicationId() {
@@ -77,13 +87,11 @@ public final class Jwt {
 	}
 
 	public String getId() {
-		String jti = jwt.getId();
-		return jti != null ? jti : UUID.randomUUID().toString();
+		return jwt.getId();
 	}
 
 	public Instant getIssuedAt() {
-		Instant iat = jwt.getIssuedAtAsInstant();
-		return iat != null ? iat : Instant.now();
+		return jwt.getIssuedAtAsInstant();
 	}
 
 	public Instant getNotBefore() {
