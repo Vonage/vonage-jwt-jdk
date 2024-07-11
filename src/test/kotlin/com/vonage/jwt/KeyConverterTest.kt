@@ -24,7 +24,6 @@ package com.vonage.jwt
 import org.junit.Before
 import org.junit.Test
 import java.io.File
-import java.nio.charset.StandardCharsets
 import java.security.Key
 import java.util.*
 import kotlin.test.assertEquals
@@ -37,8 +36,8 @@ private const val PUBLIC_KEY_FOOTER = "-----END PUBLIC KEY-----"
 private const val PUBLIC_KEY_PATH = "src/test/resources/public.key"
 
 class KeyConverterTest {
-    val privateKeyContents = File(PRIVATE_KEY_PATH).readText()
-    val publicKeyContents = File(PUBLIC_KEY_PATH).readText()
+    private val privateKeyContents = File(PRIVATE_KEY_PATH).readText()
+    private val publicKeyContents = File(PUBLIC_KEY_PATH).readText()
 
     private fun String.removeSpaces(): String = replace("\\s+".toRegex(), "")
 
@@ -52,7 +51,7 @@ class KeyConverterTest {
         .replace(PUBLIC_KEY_FOOTER, "")
         .removeSpaces()
 
-    lateinit var keyConverter: KeyConverter
+    private lateinit var keyConverter: KeyConverter
 
     private fun Key.encodeToString() = Base64.getEncoder().encodeToString(encoded)
 
@@ -91,5 +90,10 @@ class KeyConverterTest {
 
         assertEquals("X.509", key.format)
         assertEquals(sanitizedPublicKey, key.encodeToString())
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `when given an invalid algorithm an IllegalStateException is thrown`() {
+        KeyConverter("Logarithm")
     }
 }
