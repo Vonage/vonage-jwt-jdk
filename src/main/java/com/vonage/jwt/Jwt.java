@@ -48,18 +48,17 @@ import java.util.stream.Collectors;
 public final class Jwt {
 	static final String APPLICATION_ID_CLAIM = "application_id";
 
-	private final String privateKeyContents;
 	private final JWTCreator.Builder jwtBuilder;
 	private final Algorithm algorithm;
 	private final DecodedJWT jwt;
 
 	private Jwt(Builder builder) {
-		privateKeyContents = builder.privateKeyContents;
 		// Hack to avoid having to duplicate the builder's properties in this object.
 		jwt = JWT.decode((jwtBuilder = builder.auth0JwtBuilder).sign(Algorithm.none()));
 		try {
-			algorithm = privateKeyContents == null || privateKeyContents.trim().isEmpty() ?
-					Algorithm.none() : Algorithm.RSA256(new KeyConverter().privateKey(privateKeyContents));
+			algorithm = builder.signed ?
+					Algorithm.RSA256(new KeyConverter().privateKey(builder.privateKeyContents)) :
+					Algorithm.none();
 		}
 		catch (InvalidKeySpecException ex) {
 			throw new IllegalStateException(ex);
@@ -92,15 +91,6 @@ public final class Jwt {
 	 */
 	public UUID getApplicationId() {
 		return UUID.fromString(jwt.getClaim(APPLICATION_ID_CLAIM).asString());
-	}
-
-	/**
-	 * Returns the contents of the private key.
-	 *
-	 * @return The private key as a string, or {@code null} if the token is unsigned.
-	 */
-	String getPrivateKeyContents() {
-		return privateKeyContents;
 	}
 
 	/**
@@ -165,9 +155,9 @@ public final class Jwt {
 	 */
 	public static class Builder {
 		private final JWTCreator.Builder auth0JwtBuilder = JWT.create();
-		private UUID applicationId;
-		private String privateKeyContents = "";
-		private boolean signed = true;
+		String privateKeyContents = "";
+		UUID applicationId;
+		boolean signed = true;
 
 		/**
 		 * (REQUIRED)

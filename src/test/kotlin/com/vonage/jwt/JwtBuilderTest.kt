@@ -21,7 +21,6 @@
  */
 package com.vonage.jwt
 
-import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -30,7 +29,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.*
-import kotlin.test.assertEquals
+import kotlin.test.*
 
 private const val PRIVATE_KEY_PATH = "src/test/resources/private.key"
 
@@ -59,17 +58,28 @@ class JwtBuilderTest {
     }
 
     @Test(expected = IllegalArgumentException::class)
-    fun `when application id is not a UUID an IllegalArguementException is thrown`() {
+    fun `when application id is not a UUID an IllegalArgumentException is thrown`() {
         builder.applicationId("application-id")
     }
 
     @Test
+    fun `when unsigned then private key is not required`() {
+        val jwtBuilder = builder.applicationId(applicationId).unsigned()
+
+        assertFalse(jwtBuilder.signed)
+        assertEquals("", jwtBuilder.privateKeyContents)
+        assertEquals(applicationId, jwtBuilder.build().applicationId)
+    }
+
+    @Test
     fun `when application id and private key are provided jwt is built with them`() {
-        val jwt = builder.applicationId(applicationId)
-            .privateKeyPath(PRIVATE_KEY_PATH).build()
+        val jwtBuilder = builder.applicationId(applicationId)
+            .privateKeyPath(PRIVATE_KEY_PATH)
+        val jwt = jwtBuilder.build()
 
         assertEquals(applicationId, jwt.applicationId)
-        assertEquals(File(PRIVATE_KEY_PATH).readText(), jwt.privateKeyContents)
+        assertEquals(File(PRIVATE_KEY_PATH).readText(), jwtBuilder.privateKeyContents)
+        assertTrue(jwtBuilder.signed)
     }
 
     @Test
@@ -170,11 +180,6 @@ class JwtBuilderTest {
 
         assertApplicationId(2, jwt)
         assertEquals("subject", jwt.subject)
-    }
-
-    @Test
-    fun `when unsigned is true private key is not required`() {
-        assertNotNull(builder.applicationId(applicationId).unsigned().build());
     }
 
     private fun builderWithRequiredFields() = builder.applicationId(applicationId)
