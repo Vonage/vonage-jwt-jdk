@@ -62,7 +62,7 @@ You can also provide a `Path` to the location of your private key:
 ```java
 var jws = Jwt.builder()
         .applicationId("your-application-id")
-        .privateKeyPath(Paths.get("/path/to/private.key"))
+        .privateKeyPath("/path/to/private.key")
         .build().generate();
 ```
 
@@ -76,7 +76,7 @@ method. For example, to set the `nbf` ("not before") and `exp` ("expires at") cl
 ```java
 var jws = Jwt.builder()
         .applicationId("your-application-id")
-        .privateKeyPath(Paths.get("/path/to/private.key"))
+        .privateKeyPath("/path/to/private.key")
         .withProperties(jb -> jb
               .withNotBefore(Instant.now())
               .withExpiresAt(Instant.now().plus(Duration.ofHours(6)))
@@ -92,7 +92,7 @@ In some instances, you might want to define custom claims.
 // Add them individually using addClaim
 var jws = Jwt.builder()
         .applicationId("your-application-id")
-        .privateKeyPath(Paths.get("/path/to/private.key"))
+        .privateKeyPath("/path/to/private.key")
         .addClaim("foo", "bar")
         .addClaim("bat", "baz")
         .build().generate();
@@ -100,14 +100,14 @@ var jws = Jwt.builder()
 // Or add multiples using a map
 var jws = Jwt.builder()
         .applicationId("your-application-id")
-        .privateKeyPath(Paths.get("/path/to/private.key"))
+        .privateKeyPath("/path/to/private.key")
         .claims(Map.of("foo", "bar", "bat", "baz"))
         .build().generate();
 
 // Or add using the Auth0 builder
 var jws = Jwt.builder()
 		.applicationId("your-application-id")
-		.privateKeyPath(Paths.get("/path/to/private.key"))
+		.privateKeyPath("/path/to/private.key")
 		.withProperties(jb -> jb.withClaim("claim-name", claimValue))
 		.build().generate();
 ```
