@@ -26,7 +26,6 @@ import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -272,6 +271,7 @@ public final class Jwt {
 		}
 
 		/**
+		 * (OPTIONAL)
 		 * Adds a custom claim for generated JWTs.
 		 *
 		 * @param key Name of the claim.
@@ -299,6 +299,7 @@ public final class Jwt {
 		}
 
 		/**
+		 * (OPTIONAL)
 		 * Sets the {@code jti} claim.
 		 * If unspecified, a random UUID will be used every time a new JWT is generated.
 		 *
@@ -310,6 +311,7 @@ public final class Jwt {
 		}
 
 		/**
+		 * (OPTIONAL)
 		 * Sets the {@code nbf} claim.
 		 *
 		 * @param nbf The start time at which the generated JWTs will be valid from.
@@ -320,6 +322,7 @@ public final class Jwt {
 		}
 
 		/**
+		 * (OPTIONAL)
 		 * Sets the {@code exp} claim.
 		 *
 		 * @param exp The expiry time of generated JWTs.
@@ -330,6 +333,7 @@ public final class Jwt {
 		}
 
 		/**
+		 * (OPTIONAL)
 		 * Sets the {@code sub} claim.
 		 *
 		 * @param sub The subject of generated JWTs.
