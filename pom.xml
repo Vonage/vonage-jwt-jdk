@@ -125,6 +125,33 @@
                     <target>8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <replaceregexp
+                                        file="README.md"
+                                        match="(implementation 'com\.vonage:jwt:).+'"
+                                        replace="\1${project.version}'"
+                                />
+                                <replaceregexp
+                                        file="README.md"
+                                        match="(.version.)(.{5})(.{2}version.)"
+                                        replace="\1${project.version}\3"
+                                />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
