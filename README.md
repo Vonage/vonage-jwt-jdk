@@ -105,7 +105,6 @@ var jws = Jwt.builder()
         .build().generate();
 
 // Or add using the Auth0 builder
-
 var jws = Jwt.builder()
 		.applicationId("your-application-id")
 		.privateKeyPath(Paths.get("/path/to/private.key"))

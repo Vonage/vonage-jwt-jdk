@@ -8,7 +8,7 @@
     <artifactId>jwt</artifactId>
     <version>2.0.0</version>
 
-    <name>jwt</name>
+    <name>Vonage JWT</name>
     <description>Java library for creating JWTs for use with Vonage APIs</description>
     <url>https://github.com/vonage/vonage-jwt-jdk</url>
     <scm>
@@ -61,12 +61,6 @@
             <version>4.4.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test-junit</artifactId>
