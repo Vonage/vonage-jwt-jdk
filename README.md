@@ -6,7 +6,7 @@
 ![CodeQL](https://github.com/Vonage/vonage-jwt-jdk/actions/workflows/codeql.yml/badge.svg)
 [![codecov](https://codecov.io/gh/Vonage/vonage-jwt-jdk/graph/badge.svg)](https://codecov.io/gh/Vonage/vonage-jwt-jdk)
 ![SLOC](https://sloc.xyz/github/Vonage/vonage-jwt-jdk)
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Vonage/vonage-jwt-jdk/badge)](https://scorecard.dev/viewer/?uri=github.com/Vonage/vonage-kotlin-sdk)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Vonage/vonage-jwt-jdk/badge)](https://scorecard.dev/viewer/?uri=github.com/Vonage/vonage-jwt-jdk)
 <!--[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.1%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)-->
 
@@ -109,8 +109,8 @@ var jws = Jwt.builder()
 
 // Or add using the Auth0 builder
 var jws = Jwt.builder()
-		.applicationId("your-application-id")
-		.privateKeyPath("/path/to/private.key")
-		.withProperties(jb -> jb.withClaim("claim-name", claimValue))
-		.build().generate();
+        .applicationId("your-application-id")
+        .privateKeyPath("/path/to/private.key")
+        .withProperties(jb -> jb.withClaim("claim-name", claimValue))
+        .build().generate();
 ```
