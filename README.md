@@ -21,7 +21,7 @@ For Gradle:
 
 ```groovy
 dependencies {
-    implementation 'com.vonage:jwt:2.0.0'
+    implementation 'com.vonage:jwt:2.0.1'
 }
 ```
 
@@ -31,7 +31,7 @@ For Maven:
 <dependency>
   <groupId>com.vonage</groupId>
   <artifactId>jwt</artifactId>
-  <version>2.0.0</version>
+  <version>2.0.1</version>
 </dependency>
 ```
 
