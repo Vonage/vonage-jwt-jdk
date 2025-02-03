@@ -140,6 +140,18 @@ class JwtGeneratorTest {
     }
 
     @Test
+    fun `when privateKeyContents is empty the jwt is unsigned`() {
+        val token = Jwt.builder()
+            .applicationId(applicationId)
+            .privateKeyContents("   ")
+            .build().generate()
+
+        val decoded = decodeUnsignedJwt(token)
+        assertEquals(0, decoded.signature.length)
+        assertEquals(Algorithm.none().name, decoded.algorithm)
+    }
+
+    @Test
     fun `when a map is given as claim value then it is jsonified in generated string`() {
         val token : String = Jwt.builder()
             .applicationId("aaaaaaaa-bbbb-cccc-dddd-0123456789ab")
@@ -171,6 +183,7 @@ class JwtGeneratorTest {
     }
 
     private fun decodeJwt(token: String): DecodedJWT = JWT.require(Algorithm.RSA256(rsaKey)).build().verify(token)
+    private fun decodeUnsignedJwt(token: String): DecodedJWT = JWT.decode(token)
     private fun testDateInUtc() = ZonedDateTime.of(LocalDateTime.of(1990, 3, 4, 0, 0, 0), ZoneId.of("UTC"))
     private fun testDateInEst() = ZonedDateTime.of(LocalDateTime.of(1990, 3, 4, 0, 0, 0), ZoneId.of("America/Detroit"))
 }

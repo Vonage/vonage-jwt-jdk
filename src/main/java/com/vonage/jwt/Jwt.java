@@ -202,7 +202,7 @@ public final class Jwt {
 		 */
 		public Builder privateKeyContents(String privateKeyContents) {
 			this.privateKeyContents = Objects.requireNonNull(privateKeyContents);
-			this.signed = !privateKeyContents.isEmpty();
+			this.signed = !privateKeyContents.trim().isEmpty();
 			return this;
 		}
 
