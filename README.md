@@ -5,10 +5,11 @@
 [![Build Status](https://github.com/Vonage/vonage-jwt-jdk/actions/workflows/build.yml/badge.svg)](https://github.com/Vonage/vonage-jwt-jdk/actions/workflows/build.yml)
 ![CodeQL](https://github.com/Vonage/vonage-jwt-jdk/actions/workflows/codeql.yml/badge.svg)
 [![codecov](https://codecov.io/gh/Vonage/vonage-jwt-jdk/graph/badge.svg)](https://codecov.io/gh/Vonage/vonage-jwt-jdk)
-![SLOC](https://sloc.xyz/github/Vonage/vonage-jwt-jdk)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Vonage/vonage-jwt-jdk/badge)](https://scorecard.dev/viewer/?uri=github.com/Vonage/vonage-jwt-jdk)
-<!--[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.1%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)-->
+[![SLOC](https://sloc.xyz/github/Vonage/vonage-jwt-jdk)](https://sloc.xyz/github/Vonage/vonage-jwt-jdk)
+[![Javadoc](https://javadoc.io/badge/com.vonage/jwt.svg)](https://javadoc.io/doc/com.vonage/jwt/latest/index.html)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.1%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 This library provides a wrapper for generating JWTs using Vonage-specific claims.
 It is mainly used by the [Vonage Java Server SDK](https://github.com/Vonage/vonage-java-sdk).
