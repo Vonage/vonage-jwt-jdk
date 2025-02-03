@@ -26,15 +26,8 @@ If applicable, add screenshots to help explain your problem.
 **Request/Response**
 If applicable, please provide the request used and the response
 
-**Vonage SDK Version**
+**Vonage JWT library Version**
  - Version:
-
-**Java SDK Version**
-- Version:
-
-**Proxy Server Used**
- * [ ] Yes
- * [ ] No
 
 **Additional context/ Error Log**
 Add any other context about the problem here.
