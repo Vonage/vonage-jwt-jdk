@@ -29,8 +29,10 @@ import java.io.File
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 private const val PRIVATE_KEY_PATH = "src/test/resources/private.key"
@@ -122,6 +124,19 @@ class JwtGeneratorTest {
         assertTrue(decoded.claims.containsKey("iat"))
         assertTrue(decoded.claims.containsKey("jti"))
         assertNotNull(decoded.signature)
+    }
+
+    @Test
+    fun `when id is empty the jwt is generated with a random UUID for jti claim`() {
+        val token = Jwt.builder()
+            .applicationId(applicationId)
+            .privateKeyContents(privateKeyContents)
+            .id(" \t\n  ").build().generate()
+
+        val decoded = decodeJwt(token)
+        val jti = decoded.claims["jti"]?.asString()
+        assertNotNull(jti)
+        assertEquals(jti, UUID.fromString(jti).toString())
     }
 
     @Test

@@ -72,7 +72,7 @@ public final class Jwt {
 	 */
 	public String generate() {
 		String jti = getId();
-		if (jti == null || jti.isEmpty()) {
+		if (jti == null || jti.trim().isEmpty()) {
 			jwtBuilder.withJWTId(UUID.randomUUID().toString());
 		}
 

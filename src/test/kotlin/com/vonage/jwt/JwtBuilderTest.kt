@@ -57,6 +57,11 @@ class JwtBuilderTest {
         builder.applicationId(applicationId).build()
     }
 
+    @Test(expected = IllegalStateException::class)
+    fun `when private key is invalid an IllegalStateException is thrown upon build`() {
+        builder.applicationId(applicationId).privateKeyContents("Gobbledegook").build()
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun `when application id is not a UUID an IllegalArgumentException is thrown`() {
         builder.applicationId("application-id")
@@ -148,6 +153,13 @@ class JwtBuilderTest {
 
         assertApplicationId(2, jwt)
         assertEquals("id", jwt.id)
+    }
+
+    @Test
+    fun `when id is null the jwt is built without it`() {
+        val jwt = builderWithRequiredFields().build()
+        assertNull(jwt.id)
+        assertApplicationId(1, jwt)
     }
 
     @Test
