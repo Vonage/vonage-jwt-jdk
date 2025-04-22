@@ -13,13 +13,13 @@ jobs:
       packages: write
     steps:
       - name: Checkout the repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.release.target_commitish }}
       - name: Setup Java and Maven Central
-        uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12
+        uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'temurin'
           cache: maven
           server-id: nexus-releases
