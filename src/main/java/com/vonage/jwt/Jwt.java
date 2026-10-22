@@ -27,6 +27,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,13 +49,15 @@ import java.util.stream.Collectors;
 public final class Jwt {
 	static final String APPLICATION_ID_CLAIM = "application_id";
 
-	private final JWTCreator.Builder jwtBuilder;
+	private final String payloadJson;
 	private final Algorithm algorithm;
 	private final DecodedJWT jwt;
 
 	private Jwt(Builder builder) {
 		// Hack to avoid having to duplicate the builder's properties in this object.
-		jwt = JWT.decode((jwtBuilder = builder.auth0JwtBuilder).sign(Algorithm.none()));
+		jwt = JWT.decode(builder.auth0JwtBuilder.sign(Algorithm.none()));
+		// Immutable snapshot of the claims, so that generate() never touches shared mutable state.
+		payloadJson = new String(Base64.getUrlDecoder().decode(jwt.getPayload()), StandardCharsets.UTF_8);
 		try {
 			algorithm = builder.signed ?
 					Algorithm.RSA256(new KeyConverter().privateKey(builder.privateKeyContents)) :
@@ -67,21 +70,26 @@ public final class Jwt {
 
 	/**
 	 * Creates a new Base64-encoded JWT using the settings specified in the builder.
+	 * <p>
+	 * This method is thread-safe: each call signs its own claims, so concurrent calls on the same
+	 * instance never share a {@code jti} or {@code iat}.
 	 *
 	 * @return A new Json Web Token as a string.
 	 */
 	public String generate() {
+		JWTCreator.Builder creator = JWT.create().withPayload(payloadJson);
+
 		String jti = getId();
 		if (jti == null || jti.trim().isEmpty()) {
-			jwtBuilder.withJWTId(UUID.randomUUID().toString());
+			creator.withJWTId(UUID.randomUUID().toString());
 		}
 
 		Instant iat = getIssuedAt();
 		if (iat == null) {
-			jwtBuilder.withIssuedAt(Instant.now());
+			creator.withIssuedAt(Instant.now());
 		}
 
-		return jwtBuilder.sign(algorithm);
+		return creator.sign(algorithm);
 	}
 
 	/**
