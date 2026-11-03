@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.2] - 2026-11-03
+- Bumped `com.auth0:java-jwt` version to 4.6.2
+- Bumped Jackson runtime dependency version to 2.21.7 (fixes jackson-core DoS/ReDoS advisories)
+- Bumped Kotlin version to 2.2.0
+- Bumped build plugin versions
+
 ## [2.0.1] - 2025-02-03
 - Bumped `com.auth0:java-jwt` version to 4.5.0
 
