@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+- Fixed `Jwt.generate()` not being thread-safe: concurrent calls on one `Jwt` mutated a shared builder, so several tokens could be signed with the same `jti` (and `iat`). Each call now signs its own claims.
+
 ## [2.0.1] - 2025-02-03
 - Bumped `com.auth0:java-jwt` version to 4.5.0
 
