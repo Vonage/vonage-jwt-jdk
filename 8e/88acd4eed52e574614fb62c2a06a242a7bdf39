@@ -1,0 +1,21 @@
+CHANGELOG.md
+  s_fc4ff6417ee3f5::t_0edd11caca3c11 7
+pom.xml
+  s_fc4ff6417ee3f5::t_9bfe2430ca9699 66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8e88acd4eed52e574614fb62c2a06a242a7bdf39",
+  "prompts": {},
+  "sessions": {
+    "s_fc4ff6417ee3f5": {
+      "agent_id": {
+        "tool": "kiro",
+        "id": "sess_63a91faf-5ca4-4842-b383-10ef8377d1b5",
+        "model": "auto"
+      },
+      "human_author": "Chris Tankersley <chris@ctankersley.com>"
+    }
+  }
+}
